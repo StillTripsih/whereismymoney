@@ -1,0 +1,12 @@
+/** Normalize spoken amounts without changing the transcript saved with the expense. */
+const values:Record<string,number>={zero:0,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,eighteen:18,nineteen:19,twenty:20,thirty:30,forty:40,fifty:50,sixty:60,seventy:70,eighty:80,ninety:90,нуль:0,один:1,одна:1,одну:1,два:2,дві:2,три:3,чотири:4,пять:5,шість:6,сім:7,вісім:8,девять:9,десять:10,одинадцять:11,дванадцять:12,тринадцять:13,чотирнадцять:14,пятнадцять:15,шістнадцять:16,сімнадцять:17,вісімнадцять:18,девятнадцять:19,двадцять:20,тридцять:30,сорок:40,пятдесят:50,шістдесят:60,сімдесят:70,вісімдесят:80,девяносто:90,сто:100,двісті:200,триста:300,чотириста:400,пятсот:500,шістсот:600,сімсот:700,вісімсот:800,девятсот:900};
+const thai:Record<string,number>={'ศูนย์':0,'หนึ่ง':1,'เอ็ด':1,'สอง':2,'ยี่':2,'สาม':3,'สี่':4,'ห้า':5,'หก':6,'เจ็ด':7,'แปด':8,'เก้า':9};
+function thaiNumber(text:string){let total=0,part=0;for(const word of text.match(/ศูนย์|หนึ่ง|สอง|สาม|สี่|ห้า|หก|เจ็ด|แปด|เก้า|เอ็ด|ยี่|สิบ|ร้อย|พัน|หมื่น|แสน|ล้าน/g)||[]){if(word in thai){part+=thai[word]}else if(word==='ล้าน'){total=(total+part||1)*1000000;part=0}else{const scale=({'สิบ':10,'ร้อย':100,'พัน':1000,'หมื่น':10000,'แสน':100000}as Record<string,number>)[word];total+=(part||1)*scale;part=0}}return total+part}
+export function normalizeSpeech(text:string):string{
+ let s=text.toLowerCase().replace(/[๐-๙]/g,c=>String(c.charCodeAt(0)-0x0e50)).replace(/[’']/g,'');
+ const tokens=Object.keys(values).sort((a,b)=>b.length-a.length).join('|');
+ const expression=new RegExp('(?<![a-zа-яіїєґ])(?:'+tokens+'|hundred|thousand|тисяча|тисячі|тисяч)(?:(?:[ -]+)(?:'+tokens+'|hundred|thousand|тисяча|тисячі|тисяч|and))*(?![a-zа-яіїєґ])','gu');
+ s=s.replace(expression,phrase=>{let sum=0,block=0;for(const word of phrase.split(/[ -]+/)){if(word==='and')continue;if(word==='hundred')block=(block||1)*100;else if(/^(thousand|тисяч)/.test(word)){sum+=(block||1)*1000;block=0}else block+=values[word]||0}return String(sum+block)});
+ s=s.replace(/(?:(?:ศูนย์|หนึ่ง|สอง|สาม|สี่|ห้า|หก|เจ็ด|แปด|เก้า|เอ็ด|ยี่|สิบ|ร้อย|พัน|หมื่น|แสน|ล้าน))+/g,n=>String(thaiNumber(n)));
+ return s.replace(/bahts?|บาท|батів|бати/gi,'бат').replace(/dollars?|ดอลลาร์/gi,'usd').replace(/hryvnias?|гривень|гривні/gi,'uah').replace(/yesterday|เมื่อวาน|вчора/gi,'вчера');
+}

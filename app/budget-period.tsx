@@ -1,0 +1,2 @@
+import {tr, localeCode, categoryLabel} from '@/lib/i18n';
+import {WheelDate} from './wheel-date';import {daysBetween} from '@/lib/finance';export function BudgetPeriod({start,end,onStart,onEnd}:{start:string;end:string;onStart:(v:string)=>void;onEnd:(v:string)=>void}){return <div className="budget-period"><WheelDate value={start} onChange={onStart} label={tr("Начало периода")}/><div><small>{start<=end?daysBetween(start,end):0}</small><span>⟶</span></div><WheelDate value={end} onChange={onEnd} label={tr("Конец периода")}/></div>}

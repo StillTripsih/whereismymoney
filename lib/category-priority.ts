@@ -1,0 +1,2 @@
+import type {Category,State} from './finance';export const defaultQuick=['cat-0','cat-1','cat-fun'];export function quickCategories(data:State){const requested=data.quickCategories||(data.budget?.quick?.length?data.budget.quick.slice(0,3):defaultQuick);return requested.filter(id=>data.categories.some(c=>c.id===id&&!c.archived)).slice(0,3)}export function orderedCategories(cats:Category[],ids:string[]){return [...cats].sort((a,b)=>{const x=ids.indexOf(a.id),y=ids.indexOf(b.id);return (x<0?999:x)-(y<0?999:y)})}
+

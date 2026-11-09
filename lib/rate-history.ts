@@ -1,0 +1,1 @@
+import type {State,Rates} from './finance';export function recordRateUpdate(data:State,rates:Rates,provider:NonNullable<State['rateProvider']>,updated=new Date().toISOString()):State{return {...data,rates,rateProvider:provider,rateHistory:[...(data.rateHistory||[]),{rates:{...rates},updated}]}}

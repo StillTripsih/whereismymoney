@@ -1,0 +1,1 @@
+import {calculate,convert,type Currency,type Rates} from './finance';export function currencyQuote(raw:string,from:Currency,to:Currency,rates:Rates):number|null{try{const amount=calculate(raw);if(!Number.isFinite(amount)||Math.abs(amount)>1e12)return null;return convert(amount,from,to,rates)}catch{return null}}

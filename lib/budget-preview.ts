@@ -1,0 +1,2 @@
+import {currencyInput} from './currency-input';import {daysBetween,validDate,type Currency} from './finance';
+export function budgetDailyPreview(raw:string,currency:Currency,start:string,end:string):number|null{if(!validDate(start)||!validDate(end)||start>end)return null;const days=daysBetween(start,end);if(days<1||days>366)return null;try{const amount=currencyInput(raw,currency);return amount>0&&Number.isFinite(amount)?amount/days:null}catch{return null}}

@@ -1,0 +1,1 @@
+export function amountFontSize(available:number,measured:number,base=50){if(!Number.isFinite(available)||!Number.isFinite(measured)||available<=0||measured<=0)return 1;return Math.max(1,Math.min(base,Math.floor(Math.max(0,available-1)/measured*base)))}

@@ -1,0 +1,2 @@
+import {allCurrencies,convert,type State,type Currency} from './finance';
+export function savingsBalance(data:State,target:Currency):number|null{let result=0;for(const c of allCurrencies){if(data.savings[c]==null)continue;const n=convert(data.savings[c]!,c,target,data.rates);if(n===null)return null;result+=n}if(data.savingsCheckpoint)for(const e of data.entries){if(e.created<=data.savingsCheckpoint)continue;const n=convert(e.amount,e.currency,target,data.rates);if(n===null)return null;result+=e.kind==='expense'?-n:n}return Math.round(result*100)/100;}

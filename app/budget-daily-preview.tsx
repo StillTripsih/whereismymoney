@@ -1,0 +1,2 @@
+import {budgetDailyPreview} from '@/lib/budget-preview';import {money,type Currency} from '@/lib/finance';import {tr} from '@/lib/i18n';
+export function BudgetDailyPreview({amount,currency,start,end}:{amount:string;currency:Currency;start:string;end:string}){const daily=budgetDailyPreview(amount,currency,start,end);return <p className="budget-daily-preview" aria-live="polite"><strong>{daily===null?'—':money(daily,currency)}</strong><small>{tr('в день')}</small></p>}

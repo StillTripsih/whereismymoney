@@ -1,0 +1,4 @@
+import {tr, localeCode, categoryLabel} from '@/lib/i18n';
+import {useContext} from 'react';import {CategoryPriorityContext} from './ui';import {orderedCategories} from '@/lib/category-priority';
+import type {Category} from '@/lib/finance';import {CatIcon} from './ui';
+export function CategoryTiles({categories,selected=[],onSelect,label=tr("Категории")}:{categories:Category[];selected?:string[];onSelect:(id:string)=>void;label?:string}){const priorities=useContext(CategoryPriorityContext);return <div className="category-tiles" role="group" aria-label={label}>{orderedCategories(categories,priorities).map(c=><button className={priorities.includes(c.id)?'priority-category':''} key={c.id} type="button" aria-label={categoryLabel(c)} aria-pressed={selected.includes(c.id)} onClick={()=>onSelect(c.id)}><CatIcon category={c}/><small>{categoryLabel(c)}</small></button>)}</div>}
