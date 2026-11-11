@@ -101,3 +101,13 @@ body{background:radial-gradient(ellipse at 15% 8%,color-mix(in srgb,var(--user-a
 .budget-editor .budget-amount-display{color:var(--user-ink)!important;font-weight:700!important}
 .budget-editor .budget-day-row .budget-amount-display{font-weight:600!important}
 .budget-currency-mark{display:grid!important;place-items:center!important;min-width:34px!important;color:var(--user-accent)!important;font-size:26px!important;font-weight:600!important;line-height:1!important}
+/* Release 38: wallet controls frame the primary balance. */
+.wallet-controls-block{display:flex!important;justify-content:center!important;margin-bottom:8px!important}
+.wallet-primary-row{display:grid!important;grid-template-columns:44px minmax(0,1fr) 44px!important;align-items:center!important;width:100%!important;max-width:360px!important;margin:0 auto!important}
+.wallet-primary-row .wallet-side-control,.wallet-primary-row .picker-button{display:grid!important;place-items:center!important;width:44px!important;height:44px!important;min-width:44px!important;padding:4px!important;background:transparent!important;border:0!important;color:var(--user-accent)!important;font-size:0!important}
+.wallet-primary-row .picker-button svg,.wallet-primary-row .wallet-side-control svg{width:25px!important;height:25px!important;stroke-width:1.5!important}
+.wallet-primary-row .wallet-main-value{width:100%!important}
+.picker-overlay.budget-list-picker .picker-close{left:auto!important;right:16px!important;color:var(--user-ink)!important}
+.picker-overlay.budget-list-picker>section::before{content:'Все бюджеты';position:absolute;left:18px;top:22px;color:var(--user-accent);font-size:11px;font-weight:400}
+.picker-overlay.budget-list-picker .picker-options>button{color:var(--user-ink)!important}
+.picker-overlay.budget-list-picker .picker-options>button[aria-pressed=true]::before{color:#fff!important}
