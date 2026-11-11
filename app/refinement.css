@@ -97,3 +97,7 @@ body{background:radial-gradient(ellipse at 15% 8%,color-mix(in srgb,var(--user-a
 .budget-period-presets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px!important;width:100%}
 .budget-period-presets>button{min-height:38px!important;padding:7px 5px!important;border:1px solid color-mix(in srgb,var(--user-accent) 24%,transparent)!important;border-radius:12px!important;background:transparent!important;color:var(--user-accent)!important;font-size:11px!important;white-space:nowrap!important}
 .budget-period-presets>button[aria-pressed=true]{background:var(--user-accent)!important;border-color:var(--user-accent)!important;color:var(--user-on-accent)!important}
+/* Release 37: current-start budgets and a clear amount unit. */
+.budget-editor .budget-amount-display{color:var(--user-ink)!important;font-weight:700!important}
+.budget-editor .budget-day-row .budget-amount-display{font-weight:600!important}
+.budget-currency-mark{display:grid!important;place-items:center!important;min-width:34px!important;color:var(--user-accent)!important;font-size:26px!important;font-weight:600!important;line-height:1!important}
