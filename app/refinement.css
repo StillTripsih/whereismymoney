@@ -63,3 +63,12 @@ body{background:radial-gradient(ellipse at 15% 8%,color-mix(in srgb,var(--user-a
 .currency-manager-details{margin-top:20px}.currency-manager-details>summary{display:flex;align-items:center;justify-content:center;gap:10px;list-style:none;font-size:12px;min-height:44px;cursor:pointer}.currency-manager-details>summary::-webkit-details-marker{display:none}.currency-manager-details[open]>.managed-currencies{margin:16px 0 24px}
 .managed-currency-code{font-size:25px;font-weight:300}.managed-currency-code small{font-size:9px}.currency-rate>button{font-size:23px!important;font-weight:300;color:var(--user-ink)!important}
 @media(max-width:360px){.phone.view-stats>.analysis-controls{width:calc(100% + 28px)!important;margin-left:-28px!important;padding:16px 8px!important}.analysis-controls .budget-period>.date-trigger{font-size:16px!important}.wallet-main-value>span{font-size:32px}.wallet-secondary-value>span{font-size:25px}}
+
+/* Release 33: reliable modal controls and fixed-width amount entry. */
+.picker-overlay>section{position:relative!important;padding-top:64px!important}
+.picker-overlay .picker-close{position:absolute!important;left:16px!important;right:auto!important;top:12px!important;width:44px!important;height:44px!important;z-index:3!important;display:grid!important;place-items:center!important}
+.picker-overlay .picker-confirm{position:absolute!important;right:16px!important;left:auto!important;top:12px!important;margin:0!important;width:44px!important;height:44px!important;z-index:3!important;display:grid!important;place-items:center!important}
+.picker-overlay .picker-options{padding-top:0!important}
+.budget-amount-pad .pad-value-row{grid-template-columns:minmax(0,1fr) 44px!important;width:100%!important;min-width:0!important}
+.budget-amount-pad .entry-amount-line{width:100%!important;min-width:0!important;max-width:100%!important;overflow:hidden!important;white-space:nowrap!important}
+.budget-amount-pad .entry-amount-line .amount-fitted{display:block!important;min-width:0!important;max-width:100%!important;overflow:hidden!important;white-space:nowrap!important;text-overflow:clip!important}
