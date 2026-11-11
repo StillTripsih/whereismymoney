@@ -33,7 +33,15 @@ export type Entry = {
   note: string;
   rates: Rates;
   created: string;
+  /** Missing on records created before multi-budget support: they belong to the main budget. */
+  budgetId?: string;
 };
+export const MAIN_BUDGET_ID = 'main';
+export const ALL_BUDGETS_ID = 'all';
+export function entryBudgetId(entry: Pick<Entry,'budgetId'>) { return entry.budgetId || MAIN_BUDGET_ID; }
+export function entriesForBudget(entries: Entry[], budgetId: string) {
+  return budgetId === ALL_BUDGETS_ID ? entries : entries.filter(entry => entryBudgetId(entry) === budgetId);
+}
 export type State = {
   language?: Language;
   languagePacks?: LanguagePack[];
@@ -495,7 +503,8 @@ export function validateState(s: any): State {
       e.note.length > 5000 ||
       !validRates(e.rates) ||
       typeof e.created !== 'string' ||
-      Number.isNaN(Date.parse(e.created))
+      Number.isNaN(Date.parse(e.created)) ||
+      (e.budgetId !== undefined && (typeof e.budgetId !== 'string' || !e.budgetId || e.budgetId.length > 80))
     )
       throw Error(tr("Ошибка в операциях резервной копии"));
     tx.add(e.id);

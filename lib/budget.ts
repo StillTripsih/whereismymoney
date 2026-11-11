@@ -30,6 +30,12 @@ export function validCategoryBudgets(value:any): value is CategoryBudget[]{
  return Array.isArray(value)&&value.length<=50&&new Set(value.map(b=>b?.id)).size===value.length&&value.every(b=>!!b&&typeof b.id==='string'&&b.id.length>0&&b.id.length<=80&&typeof b.name==='string'&&b.name.trim().length>0&&b.name.length<=80&&Array.isArray(b.categories)&&b.categories.length>0&&b.categories.length<=100&&new Set(b.categories).size===b.categories.length&&b.categories.every((id:any)=>typeof id==='string'&&id.length>0&&id.length<=80)&&validBudget(b));
 }
 export function categoryBudgetStatus(b:CategoryBudget,entries:Entry[],day:string){return budgetStatus(b,entries.filter(e=>b.categories.includes(e.category)),day);}
+export function rebaseBudgetCurrency(b:Budget,next:Currency,rates:Parameters<typeof convert>[3]):Budget|null {
+ const amount=convert(b.amount,b.currency,next,rates),daily=b.dailyLimit===undefined?undefined:convert(b.dailyLimit,b.currency,next,rates);
+ if(amount===null||daily===null)return null;
+ const round=(n:number)=>next==='THB'?Math.round(n):Math.round(n*100)/100;
+ return {...b,currency:next,amount:round(amount),...(daily===undefined?{}:{dailyLimit:round(daily)})};
+}
 
 // Derived from confirmed purchases: a split receipt counts once, not once per category.
 export function deficitVisibility(b:Budget,entries:Entry[],day:string){const status=budgetStatus(b,entries,day);if(!status.active||status.missing||status.todayLeft>=0)return {count:0,opacity:1};const groups=new Map<string,{amount:number;created:string}>();for(const e of entries){if(e.kind!=='expense'||e.date!==day||e.date<b.start||e.date>b.end)continue;const v=convert(e.amount,e.currency,b.currency,e.rates);if(v===null)continue;const key=e.group||e.id,old=groups.get(key);groups.set(key,{amount:(old?.amount||0)+Math.round(v*100),created:old&&old.created<e.created?old.created:e.created})}let spent=0,count=0;for(const g of [...groups.values()].sort((a,b)=>a.created.localeCompare(b.created))){spent+=g.amount;if(spent>Math.round(status.allowance*100))count++}return {count,opacity:Math.max(5,100-Math.min(5,count)*19)/100}}

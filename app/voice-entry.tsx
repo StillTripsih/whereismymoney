@@ -21,12 +21,14 @@ export function VoiceEntry({
   active,
   data,
   category,
+  budgetId,
   onSave,
   onClose,
 }: {
   active: boolean;
   data: State;
   category: string;
+  budgetId?: string;
   onSave: (e: Entry[]) => Promise<void>;
   onClose: () => void;
 }) {
@@ -129,6 +131,7 @@ export function VoiceEntry({
           note: '',
           rates: { ...data.rates },
           created: new Date().toISOString(),
+          budgetId,
         },
       ]);
       onClose();

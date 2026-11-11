@@ -99,7 +99,8 @@ export default function FinanceApp() {
     [error, setError] = useState(''),
     [message, setMessage] = useState(''),
     [view, setView] = useState('overview'),
-    [trackedBudget,setTrackedBudget]=useState('all'),
+    [trackedBudget,setTrackedBudget]=useState('main'),
+    [walletBudget,setWalletBudget]=useState('all'),
     [display, setDisplay] = useState<Currency>('THB'),
     [period, setPeriod] = useState('month'),
     [start, setStart] = useState(today().slice(0, 8) + '01'),
@@ -314,7 +315,7 @@ export default function FinanceApp() {
     window.scrollTo({ top: 0 });
   }
   const analysisSource=analysisEntries(data,trackedBudget);
-  const chosenBudget=data.categoryBudgets?.find(b=>b.id===trackedBudget)||data.budget;
+  const chosenBudget=trackedBudget==='main'?data.budget:data.categoryBudgets?.find(b=>b.id===trackedBudget);
   const bounds = analysisBounds(period,start,end,currentDay,analysisSource,chosenBudget?.start),
     rangeValid =
       validDate(bounds.start) &&
@@ -559,7 +560,7 @@ export default function FinanceApp() {
       </div>
       {['stats', 'history'].includes(view) && (
         <>
-          <div className="analysis-controls"><div className="analysis-overview-total">{summary.missing?'—':money(summary.total,display)}</div><BudgetPeriod start={period==='all'?graphStart:bounds.start} end={period==='all'?graphEnd:bounds.end} onStart={v=>{setStart(v);setEnd(period==='all'?graphEnd:bounds.end);setPeriod('custom')}} onEnd={v=>{setStart(period==='all'?graphStart:bounds.start);setEnd(v);setPeriod('custom')}}/><div className="stats-toolbar"><div className="filters">
+          <div className="analysis-controls"><div className="analysis-overview-total">{summary.missing?'—':money(summary.total,display)}</div><BudgetPeriod start={period==='all'?graphStart:bounds.start} end={period==='all'?graphEnd:bounds.end} onStart={v=>{setStart(v);setEnd(period==='all'?graphEnd:bounds.end);setPeriod('custom')}} onEnd={v=>{setStart(period==='all'?graphStart:bounds.start);setEnd(v);setPeriod('custom')}}/><div className="stats-toolbar"><div className="analysis-budget-filter"><Picker value={trackedBudget} onChange={v=>{setTrackedBudget(v);setFilter('all');setLimit(30)}} label={tr('Выбор бюджета')} options={[["main",tr('Основной бюджет')],...(data.categoryBudgets||[]).map(b=>[b.id,b.name])]}/></div><div className="filters">
             {periods.filter(([v])=>v!=='custom').map(([v, label]) => (
               <button
                 aria-label={tr(label)} title={tr(label)} className={'chip ' + (period === v ? 'selected' : '')}
@@ -597,7 +598,7 @@ export default function FinanceApp() {
         <>
           <BudgetHome tracked={trackedBudget} setTracked={setTrackedBudget} onBudgets={async categoryBudgets=>{await persist({...data,categoryBudgets})}} data={data} day={currentDay} ready={ready} onBudget={async budget=>{await persist({...data,budget});setMessage(tr("Бюджет сохранён"))}} onSave={saveEntries} onDraft={openDraft}/>
 
-          <HomeTransactions entries={data.entries} categories={data.categories} render={entries=>list(entries,true)}/>
+          <HomeTransactions entries={analysisEntries(data,trackedBudget)} categories={data.categories} render={entries=>list(entries,true)}/>
         </>
       )}
       {view === 'stats' && (
@@ -634,7 +635,7 @@ export default function FinanceApp() {
           {list(rows)}
         </>
       )}
-      {view==='savings'&&<SavingsPanel data={data} ready={ready} onSave={persist}/>}
+      {view==='savings'&&<SavingsPanel data={data} ready={ready} onSave={persist} selectedBudget={walletBudget} onSelectedBudget={setWalletBudget}/>}
       {view==='categories'&&<Screen title={tr("Категории")} heading={<span/>} back={()=>nav('more')}><CategoriesSettings data={data} ready={ready} onSave={persist}/></Screen>}
       {view === 'more' && (
         <>

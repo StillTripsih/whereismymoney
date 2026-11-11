@@ -49,6 +49,7 @@ export type Draft = {
   amount?: number;
   currency?: Currency;
   note?: string;
+  budgetId?: string;
 };
 export function EntryForm({
   data,
@@ -179,6 +180,7 @@ export function EntryForm({
         note: note.trim(),
         rates: { ...rates },
         created: old?.created || new Date().toISOString(),
+        budgetId: old?.budgetId || draft.budgetId,
       }));
       await onSave(entries, old?.id);
       onClose();
@@ -268,6 +270,7 @@ export function EntryForm({
           note: receipt.items.filter((p) => p.category === i.category).map((p) => p.name + ' — ' + money(p.amount, currency)).join('\n'),
           rates: { ...data.rates },
           created: new Date().toISOString(),
+          budgetId: draft.budgetId,
         })),
       );
       onClose();
@@ -551,6 +554,7 @@ export function EntryForm({
         active={mode === 'voice'}
         data={data}
         category={category}
+        budgetId={draft.budgetId}
         onSave={onSave}
         onClose={onClose}
       />
