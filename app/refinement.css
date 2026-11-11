@@ -91,3 +91,9 @@ body{background:radial-gradient(ellipse at 15% 8%,color-mix(in srgb,var(--user-a
 .budget-choice>span{display:grid!important;gap:4px!important;min-width:0!important}
 .budget-choice b{display:block!important;font-size:16px!important;font-weight:400!important;line-height:1.2!important;color:var(--user-ink)!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
 .budget-choice small{display:block!important;font-size:10px!important;line-height:1.35!important;color:var(--user-accent)!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+/* Release 36: quick durations for a budget period. */
+.budget-period-wrap{width:100%;max-width:390px;margin:14px auto 18px!important}
+.budget-period-wrap .budget-period{margin:0 auto 12px!important}
+.budget-period-presets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px!important;width:100%}
+.budget-period-presets>button{min-height:38px!important;padding:7px 5px!important;border:1px solid color-mix(in srgb,var(--user-accent) 24%,transparent)!important;border-radius:12px!important;background:transparent!important;color:var(--user-accent)!important;font-size:11px!important;white-space:nowrap!important}
+.budget-period-presets>button[aria-pressed=true]{background:var(--user-accent)!important;border-color:var(--user-accent)!important;color:var(--user-on-accent)!important}
