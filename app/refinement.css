@@ -80,3 +80,14 @@ body{background:radial-gradient(ellipse at 15% 8%,color-mix(in srgb,var(--user-a
 .page-screen:has(.budget-amount-pad) .screen-window{width:min(calc(100vw - 48px),380px)!important;max-width:380px!important;min-width:0!important}
 .page-screen:has(.budget-amount-pad) .screen-body,.budget-amount-pad,.budget-amount-pad .pad-value-row{min-width:0!important;width:100%!important;box-sizing:border-box!important}
 .budget-amount-pad .entry-amount-line .amount-fitted{flex:1 1 0!important;width:0!important;text-align:center!important}
+/* Release 35: budget picker as a legible account list. */
+.picker-overlay.budget-list-picker>section{width:min(calc(100vw - 48px),380px)!important;max-width:380px!important;padding:62px 16px 18px!important}
+.picker-overlay.budget-list-picker .picker-options{display:grid!important;gap:10px!important;margin:0!important;padding:0!important}
+.picker-overlay.budget-list-picker .picker-options>button{display:block!important;min-height:76px!important;padding:0!important;text-align:left!important;background:color-mix(in srgb,var(--user-bg) 84%,var(--user-accent) 16%)!important;border:1px solid color-mix(in srgb,var(--user-accent) 24%,transparent)!important;border-radius:18px!important;color:var(--user-ink)!important;overflow:hidden!important}
+.picker-overlay.budget-list-picker .picker-options>button[aria-pressed=true]{background:color-mix(in srgb,var(--user-accent) 24%,var(--user-bg))!important;border-color:var(--user-accent)!important}
+.picker-overlay.budget-list-picker .picker-options>button[aria-pressed=true]::before{content:'✓'!important;left:auto!important;right:15px!important;top:50%!important;transform:translateY(-50%)!important;color:var(--user-ink)!important;z-index:2!important}
+.budget-choice{display:grid!important;grid-template-columns:42px minmax(0,1fr)!important;align-items:center!important;gap:12px!important;min-height:74px!important;padding:10px 48px 10px 14px!important;box-sizing:border-box!important}
+.budget-choice>svg{width:28px!important;height:28px!important;color:var(--user-accent)!important;stroke-width:1.5!important}
+.budget-choice>span{display:grid!important;gap:4px!important;min-width:0!important}
+.budget-choice b{display:block!important;font-size:16px!important;font-weight:400!important;line-height:1.2!important;color:var(--user-ink)!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+.budget-choice small{display:block!important;font-size:10px!important;line-height:1.35!important;color:var(--user-accent)!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
