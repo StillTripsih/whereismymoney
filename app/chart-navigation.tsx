@@ -1,0 +1,16 @@
+import {useRef,type ReactNode,type PointerEvent as ReactPointerEvent} from 'react';
+import {daysBetween} from '@/lib/finance';
+import {chartViewport,type ChartRange} from '@/lib/chart-viewport';
+import {tr} from '@/lib/i18n';
+type Point={x:number;y:number};
+type Gesture={range:ChartRange;center:Point;distance:number;width:number;left:number;count:number};
+export function ChartNavigation({range,limits,onChange,children}:{range:ChartRange;limits:ChartRange;onChange:(range:ChartRange)=>void;children:ReactNode}){
+const points=useRef(new Map<number,Point>()),base=useRef<Gesture|null>(null),live=useRef(range),dragged=useRef(false),box=useRef<HTMLDivElement>(null);
+live.current=range;
+const geometry=()=>{const items=[...points.current.values()];return items.length>1?{center:{x:(items[0].x+items[1].x)/2,y:(items[0].y+items[1].y)/2},distance:Math.hypot(items[1].x-items[0].x,items[1].y-items[0].y)}:{center:items[0],distance:0}};
+const reset=()=>{if(!points.current.size){base.current=null;return}const rect=box.current!.getBoundingClientRect();base.current={range:live.current,...geometry(),width:rect.width,left:rect.left,count:points.current.size}};
+const down=(e:ReactPointerEvent<HTMLDivElement>)=>{if(e.pointerType==='mouse'&&e.button!==0)return;if(!points.current.size)dragged.current=false;points.current.set(e.pointerId,{x:e.clientX,y:e.clientY});reset()};
+const move=(e:ReactPointerEvent<HTMLDivElement>)=>{if(!points.current.has(e.pointerId)||!base.current)return;points.current.set(e.pointerId,{x:e.clientX,y:e.clientY});const start=base.current,current=geometry(),dx=current.center.x-start.center.x,pinch=points.current.size>1;if(!dragged.current&&Math.abs(dx)<5&&(!pinch||Math.abs(current.distance-start.distance)<5))return;dragged.current=true;e.currentTarget.setPointerCapture(e.pointerId);const span=daysBetween(start.range.start,start.range.end),scale=pinch&&start.distance>0?current.distance/start.distance:1,next=chartViewport(start.range,limits,-dx/Math.max(1,start.width)*span,scale,(start.center.x-start.left)/Math.max(1,start.width));live.current=next;onChange(next)};
+const up=(e:ReactPointerEvent<HTMLDivElement>)=>{points.current.delete(e.pointerId);if(e.currentTarget.hasPointerCapture(e.pointerId))e.currentTarget.releasePointerCapture(e.pointerId);reset()};
+return <div ref={box} className="chart-navigation" role="group" tabIndex={0} aria-label={tr('Перемещайте диаграмму; двумя пальцами меняйте масштаб')} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} onLostPointerCapture={e=>{if(points.current.has(e.pointerId)){points.current.delete(e.pointerId);reset()}}} onClickCapture={e=>{if(dragged.current){e.preventDefault();e.stopPropagation();dragged.current=false}}} onKeyDown={e=>{if(e.target!==e.currentTarget)return;const count=daysBetween(range.start,range.end),step=Math.max(1,Math.round(count/5));let next:ChartRange|undefined;if(e.key==='ArrowLeft')next=chartViewport(range,limits,-step);if(e.key==='ArrowRight')next=chartViewport(range,limits,step);if(e.key==='+'||e.key==='=')next=chartViewport(range,limits,0,1.5);if(e.key==='-')next=chartViewport(range,limits,0,1/1.5);if(next){e.preventDefault();onChange(next)}}}>{children}<p className="chart-gesture-hint">{tr('Проведите по диаграмме · два пальца — масштаб')}</p></div>
+}

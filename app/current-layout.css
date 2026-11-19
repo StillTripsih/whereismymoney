@@ -108,3 +108,25 @@ svg.lucide-plus{width:34px!important;height:34px!important;stroke-width:1.7!impo
 @media(max-width:360px){.phone.home-minimal{padding-left:12px!important;padding-right:12px!important}.home-lower{padding-left:42px}.phone.view-stats{padding-left:58px!important;padding-right:12px!important}.analysis-dates>.date-trigger{font-size:13px!important}.phone.view-more{padding-left:46px!important;padding-right:34px!important}}
 
 svg.lucide-check{width:34px!important;height:34px!important;stroke-width:3!important;color:#fff!important}
+
+/* Direct manipulation of the expense timeline, with flat category rows. */
+.chart-navigation{width:100%;min-width:0;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;outline-offset:6px}
+.chart-navigation:active{cursor:grabbing}
+.chart-navigation .period-chart-svg{touch-action:none;overflow:visible}
+.chart-navigation:focus-visible{outline:1px solid var(--user-accent);border-radius:8px}
+.chart-gesture-hint{margin:12px 0 0!important;font-size:9px!important;line-height:1.5!important;text-align:center!important;font-style:italic;opacity:.5;pointer-events:none}
+.analysis-selection-summary{display:flex;align-items:center;gap:12px;justify-content:space-between;min-height:42px;margin:4px 0 18px;color:#fff}
+.analysis-selection-summary>span{font-size:10px!important;line-height:1.4;color:#fff!important}
+.analysis-selection-summary strong{font-size:16px!important;font-weight:400!important;color:#fff!important;white-space:nowrap}
+.analysis-selection-summary button{width:36px;height:36px;background:transparent;border:0;color:#fff;font-size:24px;flex-shrink:0}
+.analysis-category-totals{gap:0!important}
+.analysis-category-totals>button{grid-template-columns:28px minmax(0,1fr) auto!important;column-gap:14px!important;min-height:52px!important;padding:12px 0!important;border:0!important;border-radius:0!important;background:none!important;color:#fff!important}
+.analysis-category-totals>button>span,.analysis-category-totals>button>b{color:#fff!important;line-height:1.4}
+.analysis-category-totals>button[aria-pressed=true]{box-shadow:inset 0 -1px 0 #ffffff55}
+.analysis-page .entry-icon,.category-option .entry-icon{display:inline-flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;color:#fff!important}
+.analysis-page .entry-icon::before,.analysis-page .entry-icon::after,.category-option .entry-icon::before,.category-option .entry-icon::after{content:none!important}
+.analysis-page .entry-icon svg,.category-option .entry-icon svg{width:24px!important;height:24px!important;color:#fff!important;stroke-width:1.5!important}
+.analysis-transaction{column-gap:14px!important;grid-template-columns:minmax(55px,.7fr) 28px minmax(0,1.3fr)!important}
+
+.analysis-category-totals>button>span:not(.entry-icon){white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.analysis-category-totals>button>b{white-space:nowrap}

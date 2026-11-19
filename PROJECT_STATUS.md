@@ -36,3 +36,12 @@ The WIMM copy uses its own IndexedDB and localStorage names. It intentionally do
 - Verified: 71 automated tests, TypeScript and production Pages build. User records and storage identifiers unchanged.
 - Browser UI verification was blocked by automatic approval review citing the previous user restriction on browser testing. Mobile visual and interaction checks remain unverified.
 - Publication status: see GitHub Actions for the commit containing this entry.
+
+Publication verified 2026-11-19: commit 67cbd5e2be48f073f28069dbe6aae864c7c733f4; Actions run 44519771564 completed successfully. Public HTML and asset HTTP 200; index-C0iAl5DD.js SHA-256 matches the locally verified build. Browser/mobile UI remains unverified because browser access was denied by automatic approval review.
+
+## 2026-11-19 — gesture-controlled expense chart
+
+- Removed the standalone date-offset slider. Pointer drag pans the chart; two-pointer pinch zooms about the fingers. Keyboard arrows and +/- provide alternatives.
+- Chart viewport changes update dates, category totals, selected-period spending and expense rows. A tap selects one day; clearing the selection restores the visible period. Chart gestures do not trigger page navigation.
+- Category totals and expense category icons are white, flat and aligned in evenly spaced rows; chart category colours are retained.
+- Verified: 74 automated tests including panning/zooming limits, date boundaries and matching expense totals; TypeScript; production build. Native phone gestures remain unverified under the existing browser-testing restriction.
