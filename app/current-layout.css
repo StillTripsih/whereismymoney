@@ -130,3 +130,7 @@ svg.lucide-check{width:34px!important;height:34px!important;stroke-width:3!impor
 
 .analysis-category-totals>button>span:not(.entry-icon){white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .analysis-category-totals>button>b{white-space:nowrap}
+
+/* Category glyphs never have a surrounding surface or circular outline. */
+.entry-icon.entry-icon.entry-icon{background:none!important;border:0!important;border-radius:0!important;outline:0!important;box-shadow:none!important;filter:none!important}
+.entry-icon.entry-icon.entry-icon::before,.entry-icon.entry-icon.entry-icon::after{content:none!important}

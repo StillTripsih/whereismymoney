@@ -45,3 +45,9 @@ Publication verified 2026-11-19: commit 67cbd5e2be48f073f28069dbe6aae864c7c733f4
 - Chart viewport changes update dates, category totals, selected-period spending and expense rows. A tap selects one day; clearing the selection restores the visible period. Chart gestures do not trigger page navigation.
 - Category totals and expense category icons are white, flat and aligned in evenly spaced rows; chart category colours are retained.
 - Verified: 75 automated tests including panning/zooming limits, date boundaries and matching expense totals; TypeScript; production build. Native phone gestures remain unverified under the existing browser-testing restriction.
+
+Gesture update publication verified: afd55debd1775d789ffa95fb4893f9d5e0e796be; Actions 44521655954 succeeded. Public HTML/JS HTTP 200; index-CZs1djmT.js matches the checked build. Native phone gestures remain unverified.
+
+## 2026-11-19 — category icon surfaces only
+
+Removed backgrounds, borders, outlines, shadows and decorative pseudo-elements from the shared category-icon wrapper globally, including home transaction rows. Icon sizes, colours and application logic are unchanged. Production build checked; phone rendering remains unverified.
