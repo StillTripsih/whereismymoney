@@ -9,3 +9,5 @@ if(start<limits.start){start=limits.start;end=shiftDate(start,length-1)}
 if(end>limits.end){end=limits.end;start=shiftDate(end,1-length)}
 return {start,end};
 }
+
+export function chartDayAtPosition(range:ChartRange,fraction:number){const span=daysBetween(range.start,range.end);return shiftDate(range.start,Math.min(span-1,Math.max(0,Math.floor(fraction*span))))}

@@ -44,4 +44,4 @@ Publication verified 2026-11-19: commit 67cbd5e2be48f073f28069dbe6aae864c7c733f4
 - Removed the standalone date-offset slider. Pointer drag pans the chart; two-pointer pinch zooms about the fingers. Keyboard arrows and +/- provide alternatives.
 - Chart viewport changes update dates, category totals, selected-period spending and expense rows. A tap selects one day; clearing the selection restores the visible period. Chart gestures do not trigger page navigation.
 - Category totals and expense category icons are white, flat and aligned in evenly spaced rows; chart category colours are retained.
-- Verified: 74 automated tests including panning/zooming limits, date boundaries and matching expense totals; TypeScript; production build. Native phone gestures remain unverified under the existing browser-testing restriction.
+- Verified: 75 automated tests including panning/zooming limits, date boundaries and matching expense totals; TypeScript; production build. Native phone gestures remain unverified under the existing browser-testing restriction.
