@@ -1,3 +1,4 @@
+import {BudgetFunding} from './budget-funding';
 import {BudgetPlan} from './budget-plan';
 import {BudgetAmount} from './budget-amount';
 import {Screen} from './screen';
@@ -12,8 +13,8 @@ import {BudgetPeriod} from './budget-period';
 import {WheelDate} from './wheel-date';
 import {Plus,Check,ArrowLeft} from 'lucide-react';
 import {useRef,useState} from 'react';
-import {categoryBudgetStatus,validCategoryBudgets,type CategoryBudget} from '../lib/budget';
-import {calculate,currencies,money,today,daysBetween,type State,type Currency} from '../lib/finance';
+import {budgetStatus,categoryBudgetStatus,validCategoryBudgets,type CategoryBudget} from '../lib/budget';
+import {calculate,currencies,money,today,daysBetween,entriesForBudget,type State,type Currency} from '../lib/finance';
 import {labels as t} from '../lib/paired-labels';
 import {CatIcon,Picker} from './ui';
 
@@ -26,7 +27,7 @@ export function CategoryBudgets({data,day,ready,onSave}:{data:State;day:string;r
   <div className="row spaced budget-list-toolbar"><button className="budget-add bare-add" aria-label={tr("Новый бюджет")} disabled={!ready||busy||budgets.length>=50} onClick={()=>setEditing('new')}><Plus/></button></div>
   {editing&&<CategoryBudgetEditor key={editing==='new'?'new':editing.id} value={editing==='new'?undefined:editing} data={data} ready={ready&&!busy} onCancel={()=>setEditing(null)} onNew={()=>setEditing('new')} onSave={async b=>{await onSave(editing==='new'?[...budgets,b]:budgets.map(old=>old.id===b.id?b:old));setEditing(null)}}/>}
   {error&&<p role="alert" className="error">{tr(error)}</p>}
-  <div className="budget-cards">{budgets.map(b=>{const s=categoryBudgetStatus(b,reportInCurrency(data.entries,b.currency,data.rates),day);const amount=(v:number)=>s.missing?'—':money(v,b.currency);return <article className="budget-card" key={b.id}>
+  <div className="budget-cards">{budgets.map(b=>{const s=budgetStatus(b,reportInCurrency(entriesForBudget(data.entries,b.id),b.currency,data.rates),day);const amount=(v:number)=>s.missing?'—':money(v,b.currency);return <article className="budget-card" key={b.id}>
    <div className="row spaced"><h3>{b.name}</h3><button className="text-button" disabled={busy} onClick={()=>setEditing(b)}>{t.edit}</button></div>
    <p className="small muted">{b.categories.map(id=>categoryLabel(data.categories.find(c=>c.id===id))||id).join(' · ')}</p>
    <p className="small muted">{s.active?t.todayLeft:day<b.start?t.notStarted:t.ended}</p>
@@ -47,8 +48,8 @@ function CategoryBudgetEditor({value,data,ready,onCancel,onSave,onNew}:{value?:C
  const lock=useRef(false);
  async function save(){if(lock.current)return;setError('');try{if(!name.trim())throw Error(tr("Введите название бюджета"));if(daily&&currencyInput(daily,currency)<=0)throw Error(tr('Дневной лимит должен быть больше нуля'));const next:CategoryBudget={id:value?.id||crypto.randomUUID(),name:name.trim(),amount:currencyInput(amount,currency),currency,start,end,policy,dailyLimit:daily?currencyInput(daily,currency):undefined,quick:categories.slice(0,6),categories};if(!name.trim())throw Error(tr("Введите название бюджета"));if(!(next.amount>0))throw Error(tr("Сумма должна быть больше нуля"));if(!categories.length)throw Error(tr("Выберите хотя бы одну категорию"));if(start>end)throw Error(tr("Начало периода позже окончания"));if(daysBetween(start,end)>366)throw Error(tr("Период — не больше 366 дней"));if(!validCategoryBudgets([next]))throw Error(tr("Проверьте сумму и период"));lock.current=true;setBusy(true);await onSave(next)}catch(e:any){setError(tr(e.message))}finally{lock.current=false;setBusy(false)}}
  return <Screen title={value?t.editBudget:t.newBudget} heading={<input className="budget-name-title" autoComplete="off" autoCorrect="off" spellCheck={false} aria-label={t.name} value={name} maxLength={80} placeholder={t.newBudget} onChange={e=>setName(e.target.value)}/>} back={onCancel} busy={busy}><section className="budget-editor">
-  <div className="input-pair"><div className="field">{t.amount}<BudgetAmount value={amount} currency={currency} onChange={setAmount}/></div><div className="field">{t.currency}<Picker value={currency} onChange={v=>setCurrency(v as Currency)} options={visibleCurrencies(data).map(c=>[c,c])} label={t.currency}/></div></div>
-  <BudgetPeriod start={start} end={end} onStart={setStart} onEnd={setEnd}/><BudgetPlan amount={amount} currency={currency} start={start} end={end} daily={daily} onDaily={setDaily} data={data} scope={categories}/>
+  <div className="input-pair"><div className="field">{t.amount}<BudgetFunding amount={amount} currency={currency} start={start} end={end} data={data} budgetId={value?.id||"new"} onChange={setAmount}/></div><div className="field">{t.currency}<Picker value={currency} onChange={v=>setCurrency(v as Currency)} options={visibleCurrencies(data).map(c=>[c,c])} label={t.currency}/></div></div>
+  <BudgetPeriod start={start} end={end} onStart={()=>setStart(now)} onEnd={setEnd}/><BudgetPlan amount={amount} currency={currency} start={start} end={end} daily={daily} onDaily={setDaily} data={data} budgetId={value?.id||"new"} scope={categories}/>
   <CategoryMultiPicker categories={data.categories.filter(c=>!c.archived||categories.includes(c.id))} selected={categories} onChange={setCategories}/>
   
   {error&&<p role="alert" className="error">{tr(error)}</p>}

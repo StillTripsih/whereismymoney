@@ -1,3 +1,4 @@
+import {today} from '../lib/finance';
 import {shiftDate} from '../lib/finance';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -571,3 +572,12 @@ test('nested modal locks preserve the background position until the last overlay
 
 import {currencyQuote} from '../lib/currency-converter';
 test('converter quantity is independent from balances and respects the selected base',()=>{const s=initialState();s.rates.USD=35;s.rates.UAH=0.8;const before=JSON.stringify(s);assert.equal(currencyQuote('100','USD','THB',s.rates),3500);assert.equal(currencyQuote('70','THB','USD',s.rates),2);assert.equal(currencyQuote('100-20','UAH','THB',s.rates),64);assert.equal(currencyQuote('oops','THB','USD',s.rates),null);assert.equal(currencyQuote('1','EUR','THB',{...s.rates,EUR:null}),null);assert.equal(JSON.stringify(s),before)});
+
+import {budgetSpent} from '../lib/budget-funding';
+import {searchExpenses} from '../lib/expense-search';
+test('share keeps the GitHub project directory and removes private URL parameters',()=>{assert.equal(appShareUrl('https://stilltripsih.github.io/whereismymoney/?ai_connect=secret#connect=private'),'https://stilltripsih.github.io/whereismymoney/');assert.throws(()=>appShareUrl('javascript:alert(1)'))});
+test('remaining budget isolates cash and card purchases even with the same category',()=>{const state=initialState(),day=today();const entry={id:'cash',group:'cash',amount:200,currency:'THB' as const,kind:'expense' as const,category:'cat-0',date:day,note:'Groceries',rates:{...state.rates,USD:35},created:day+'T10:00:00Z',budgetId:'cash'};state.entries=[entry,{...entry,id:'card',group:'card',budgetId:'card',amount:400},{...entry,id:'usd',group:'usd',budgetId:'cash',currency:'USD',amount:10}];assert.equal(budgetSpent(state,'cash',day,day,'THB'),550);assert.equal(budgetSpent(state,'card',day,day,'THB'),400);assert.equal(budgetSpent(state,'main',day,day,'THB'),0);assert.equal(5000-budgetSpent(state,'cash',day,day,'THB')!,4450);assert.equal(JSON.parse(JSON.stringify(state)).entries.length,3)});
+test('expense search combines description, date, amount range and approximate hour',()=>{const state=initialState(),day='2026-11-19';state.rates.USD=35;const entry={id:'e',group:'e',amount:200,currency:'THB' as const,kind:'expense' as const,category:'cat-0',date:day,note:'Rice market',rates:state.rates,created:day+'T10:25:00Z'};state.entries=[entry,{...entry,id:'other',amount:900,note:'Taxi'}];assert.equal(searchExpenses(state.entries,state,'rice 19.11.2026','THB','150','250','17:00').length,1);assert.equal(searchExpenses(state.entries,state,'200','THB').length,1);assert.equal(searchExpenses(state.entries,state,'','THB','300','1000').length,1);assert.equal(searchExpenses(state.entries,state,'rice','THB','','','18:00').length,0)});
+
+import {projectedBudgetRemainder} from '../lib/budget-funding';
+test('daily plan forecasts leftover without charging today twice',()=>{assert.equal(projectedBudgetRemainder(4900,200,10,100),3000);assert.equal(projectedBudgetRemainder(4700,200,10,300),2900);assert.equal(projectedBudgetRemainder(500,200,10,0),-1500);assert.equal(projectedBudgetRemainder(null,200,10,0),null)});

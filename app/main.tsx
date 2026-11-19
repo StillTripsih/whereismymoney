@@ -3,4 +3,5 @@ import {IconHints} from './icon-hints';
 import FinanceApp from './finance-app';
 import './globals.css';
 import './refinement.css';
+import './current-layout.css';
 createRoot(document.getElementById('root')!).render(<><FinanceApp /><IconHints/></>);

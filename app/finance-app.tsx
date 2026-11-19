@@ -1,3 +1,5 @@
+import {AnalysisPanel} from './analysis-panel';
+import {createPortal} from 'react-dom';
 import {Moon,CalendarRange,Infinity as InfinityIcon} from 'lucide-react';
 import {EmptyLines} from './empty-lines';
 import {analysisBounds,analysisEntries,previousRange} from '@/lib/analysis-periods';
@@ -476,7 +478,7 @@ export default function FinanceApp() {
   const list = (entries: Entry[], compact = false) =>
     entries.length ? (
       <>
-        {entries.slice(0, limit).map((e) => (
+        {(compact?entries:entries.slice(0, limit)).map((e) => (
           <button
             className="entry category-entry"
             key={e.id}
@@ -501,7 +503,7 @@ export default function FinanceApp() {
             <ChevronRight size={14} color="#777" />
           </button>
         ))}
-        {entries.length > limit && (
+        {!compact && entries.length > limit && (
           <MoreRows onMore={() => setLimit((n) => n + 30)} />
         )}
       </>
@@ -526,7 +528,7 @@ export default function FinanceApp() {
       )}
       {message && (
         <div className="done-toast" role="status">
-          Done
+          {message}
         </div>
       )}
       {!ready && (
@@ -558,56 +560,14 @@ export default function FinanceApp() {
         </h1>
 
       </div>
-      {['stats', 'history'].includes(view) && (
-        <>
-          <div className="analysis-controls"><div className="analysis-overview-total">{summary.missing?'—':money(summary.total,display)}</div><BudgetPeriod start={period==='all'?graphStart:bounds.start} end={period==='all'?graphEnd:bounds.end} onStart={v=>{setStart(v);setEnd(period==='all'?graphEnd:bounds.end);setPeriod('custom')}} onEnd={v=>{setStart(period==='all'?graphStart:bounds.start);setEnd(v);setPeriod('custom')}}/><div className="stats-toolbar"><div className="analysis-budget-filter"><Picker value={trackedBudget} onChange={v=>{setTrackedBudget(v);setFilter('all');setLimit(30)}} label={tr('Выбор бюджета')} options={[["main",tr('Основной бюджет')],...(data.categoryBudgets||[]).map(b=>[b.id,b.name])]}/></div><div className="filters">
-            {periods.filter(([v])=>v!=='custom').map(([v, label]) => (
-              <button
-                aria-label={tr(label)} title={tr(label)} className={'chip ' + (period === v ? 'selected' : '')}
-                key={v}
-                onClick={() => {
-                  setPeriod(v);
-                  setLimit(30);
-                }}
-              >
-                {v==='today'||v==='week'?<span className="period-number-icon">{v==='today'?'1':'7'}</span>:v==='month'?<Moon size={24}/>:v==='year'?<CalendarRange size={24}/>:<InfinityIcon size={24}/>}
-              </button>
-            ))}
-          </div>
-          <div className="category-filter">
-            <Picker
-              value={filter}
-              onChange={(v) => {
-                setFilter(v);
-                setLimit(30);
-              }}
-              trigger={<Layers size={24}/>} label={tr("Фильтр категории")}
-              options={[
-                ['all', <span className="category-option"><span className="entry-icon"><Layers/></span><span>{tr("Все категории")}</span></span>],
-                ...categoryOptions(data.categories.map(c=>({...c,name:categoryLabel(c)+(c.archived?tr(" · архив"):'')}))),
-              ]}
-            />
-          </div>
-          </div></div>
-          {!rangeValid && (
-            <p className="error">{tr("Проверьте начало и конец периода.")}</p>
-          )}
-        </>
-      )}
       {view === 'overview' && (
         <>
-          <BudgetHome tracked={trackedBudget} setTracked={setTrackedBudget} onBudgets={async categoryBudgets=>{await persist({...data,categoryBudgets})}} data={data} day={currentDay} ready={ready} onBudget={async budget=>{await persist({...data,budget});setMessage(tr("Бюджет сохранён"))}} onSave={saveEntries} onDraft={openDraft}/>
+          <BudgetHome tracked={trackedBudget} setTracked={id=>{setTrackedBudget(id);const budget=id==="main"?data.budget:data.categoryBudgets?.find(b=>b.id===id);if(budget)setDisplay(budget.currency)}} onBudgets={async categoryBudgets=>{await persist({...data,categoryBudgets})}} data={data} day={currentDay} ready={ready} onBudget={async budget=>{await persist({...data,budget});setMessage(tr("Бюджет сохранён"))}} onSave={saveEntries} onDraft={openDraft}>
 
-          <HomeTransactions entries={analysisEntries(data,trackedBudget)} categories={data.categories} render={entries=>list(entries,true)}/>
+          <HomeTransactions entries={analysisEntries(data,trackedBudget)} categories={data.categories} render={entries=>list(entries,true)}/></BudgetHome>
         </>
       )}
-      {view === 'stats' && (
-        <>
-          <section className="analysis-chart-block"><DailyExpenseBars entries={expenses} previousEntries={analysisSource.filter(e=>e.kind==='expense'&&(filter==='all'||e.category===filter)).map(e=>({...e,rates:statsRates||data.rates}))} period={period} currency={display} start={graphStart} end={graphEnd} rates={statsRates||data.rates}/></section>          <section className="section analysis-expense-list">{expenses.length?list(expenses):<EmptyLines/>}</section>
-          <p className="footer-note">
-            {tr("Итоги используют курс, сохранённый в каждой операции. Неполные доходы не влияют на расходы.")}</p>
-        </>
-      )}
+      {view==='stats'&&<AnalysisPanel data={data} day={currentDay} initialBudget={trackedBudget} onEntry={e=>openDraft({entry:e})}/>}
       {view === 'history' && (
         <>
           <input
@@ -640,7 +600,7 @@ export default function FinanceApp() {
       {view === 'more' && (
         <>
           <button className="language-settings-icon" data-direct-action="true" aria-label={tr('Язык')} onClick={()=>openSettings('language')}><Languages/></button><ThemeSettings saved={data.userColors} value={data.colorTheme} onSave={async(colorTheme,userColors)=>{await persist({...data,colorTheme,userColors});setMessage(tr("Цвета сохранены"))}}/>
-          <button className="menu-item setting-budget" onClick={()=>openSettings("budgets")}><Wallet/>{tr("Бюджеты · быстрые категории")}</button><UpdateButton disabled={!ready||saving}/><p className="update-invite">{tr("Может быть, что-то интересное добавилось — попробую обновить.")}</p>
+          <button className="menu-item setting-budget" onClick={()=>openSettings("budgets")}><Wallet/><span>{tr("Бюджеты")}<br/>{tr("Быстрые категории")}</span></button><UpdateButton disabled={!ready||saving}/><p className="update-invite">{tr("Может быть, что-то интересное добавилось — попробую обновить.")}</p>
           <button className="menu-item setting-ai" onClick={() => openSettings('ai')}>
             <Settings size={21} />
             {tr("Gemini · чеки и голос")}<ChevronRight />
@@ -676,7 +636,7 @@ export default function FinanceApp() {
           </section>
         </>
       )}
-      <nav className="bottom-nav" aria-label={tr("Основная навигация")}>
+      {createPortal(<nav className="bottom-nav" aria-label={tr("Основная навигация")}>
         <button
           className={view === 'overview' ? 'active' : ''}
           onClick={() => nav('overview')}
@@ -706,7 +666,7 @@ export default function FinanceApp() {
           <Settings />
           <span>{tr("Ещё")}</span>
         </button>
-      </nav>
+      </nav>,document.body)}
       <input
         ref={backup}
         hidden

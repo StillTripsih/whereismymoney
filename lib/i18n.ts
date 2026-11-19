@@ -1,3 +1,4 @@
+import interfaceLabels from './interface-labels.json';
 import {validateLanguagePack,builtInLanguages,type LanguagePack} from './language-packs';
 import legacy from './legacy-category-labels.json';
 import dictionary from './translations.json';
@@ -12,7 +13,7 @@ export const subscribeLanguage=(listener:()=>void)=>{listeners.add(listener);ret
 export function setLanguage(language:Language){if(!languages.includes(language))throw Error('Invalid language');current=language;try{localStorage.setItem('wimm-language',language)}catch{}if(typeof document!=='undefined')document.documentElement.lang=language;listeners.forEach(fn=>fn())}
 export const localeCode=()=>({ru:'ru-RU',th:'th-TH-u-ca-gregory',en:'en-US',uk:'uk-UA'} as Record<string,string>)[current]||'en-US';
 export const speechLocale=()=>({ru:'ru-RU',th:'th-TH',en:'en-US',uk:'uk-UA'} as Record<string,string>)[current]||current;
-const entries:Record<string,{en:string;th:string;uk:string}>=dictionary;
+const entries:Record<string,{en:string;th:string;uk:string}>={...dictionary,...interfaceLabels};
 let packs:LanguagePack[]=[];
 export function registerLanguagePacks(value:LanguagePack[]){const next=value.map(pack=>validateLanguagePack(pack));if(next.length>20||new Set(next.map(p=>p.code)).size!==next.length)throw Error('Проверьте файл языка');packs=next;languages.splice(0,languages.length,'th','en','ru','uk',...packs.map(p=>p.code));for(const p of packs)languageNames[p.code]=p.name;try{localStorage.setItem('finance-language-packs',JSON.stringify(packs))}catch{}}
 try{registerLanguagePacks(JSON.parse(localStorage.getItem('wimm-language-packs')||'[]'));const saved=localStorage.getItem('wimm-language');if(saved&&languages.includes(saved))current=saved}catch{}
