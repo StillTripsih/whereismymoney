@@ -51,3 +51,9 @@ Gesture update publication verified: afd55debd1775d789ffa95fb4893f9d5e0e796be; A
 ## 2026-11-19 — category icon surfaces only
 
 Removed backgrounds, borders, outlines, shadows and decorative pseudo-elements from the shared category-icon wrapper globally, including home transaction rows. Icon sizes, colours and application logic are unchanged. Production build checked; phone rendering remains unverified.
+
+## 2026-11-19 — change an expense budget
+
+The shared transaction editor now shows the selected budget and the common budget picker. Saving can move that single expense to another budget from both home and analytics. Unchanged amount keeps the original currency, rate snapshot, receipt group and timestamp. Invalid target budgets are rejected; cancel does not persist. Storage format unchanged.
+
+Verification for expense-budget reassignment: 76 tests passed, TypeScript passed, production Pages build passed. Browser/phone interaction remains unverified under the existing restriction.

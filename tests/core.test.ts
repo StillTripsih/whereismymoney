@@ -1,3 +1,5 @@
+import {transactionDisplay} from '../lib/transaction-edit';
+import {entriesForBudget} from '../lib/finance';
 import {today} from '../lib/finance';
 import {shiftDate} from '../lib/finance';
 import test from 'node:test';
@@ -589,3 +591,5 @@ test('moving the chart interval changes the underlying expense selection and tot
 
 import {chartDayAtPosition} from '../lib/chart-viewport';
 test('chart taps select the displayed day including both boundaries and single-day zoom',()=>{const range={start:'2026-11-01',end:'2026-11-30'};assert.equal(chartDayAtPosition(range,0),'2026-11-01');assert.equal(chartDayAtPosition(range,1),'2026-11-30');assert.equal(chartDayAtPosition(range,.5),'2026-11-16');assert.equal(chartDayAtPosition(range,-1),'2026-11-01');assert.equal(chartDayAtPosition({start:'2026-11-19',end:'2026-11-19'},.9),'2026-11-19')});
+
+test('moving an expense between budgets changes only budget assignment and preserves receipt identity and original FX',()=>{const state=initialState();state.rates.USD=35;state.categoryBudgets=[{id:'card',name:'Card',amount:1000,currency:'USD',start:'2026-11-01',end:'2026-11-30',policy:'spread',quick:[],categories:['cat-0']}];const entry={id:'transfer',group:'receipt',amount:12.5,currency:'USD' as const,kind:'expense' as const,category:'cat-0',date:'2026-11-19',note:'Market',rates:{...state.rates,USD:34},created:'2026-11-19T10:25:40Z'};const before=JSON.stringify(entry),when='2026-11-19T17:25',moved=editTransaction(entry,state,transactionDisplay(entry,state),entry.category,when,when,'card');assert.deepEqual(moved,{...entry,budgetId:'card'});assert.equal(entriesForBudget([moved],'main').length,0);assert.equal(entriesForBudget([moved],'card').length,1);assert.equal(moved.currency,'USD');assert.equal(moved.rates.USD,34);assert.equal(JSON.stringify(entry),before);assert.deepEqual(editTransaction(moved,state,transactionDisplay(moved,state),moved.category,when,when,'main'),{...entry,budgetId:'main'});assert.throws(()=>editTransaction(entry,state,transactionDisplay(entry,state),entry.category,when,when,'all'));assert.throws(()=>editTransaction(entry,state,transactionDisplay(entry,state),entry.category,when,when,'missing'))});
