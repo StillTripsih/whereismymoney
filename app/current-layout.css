@@ -183,3 +183,28 @@ svg.lucide-check{width:34px!important;height:34px!important;stroke-width:3!impor
 .rate-update-log{margin:22px 0;font-size:11px;line-height:1.6}
 .rate-update-log p{font-size:10px;line-height:1.6;padding:8px 0}
 @media(max-width:360px){.amount-screen>.screen-window>.screen-body{padding-inline:12px!important}.account-wallet-row strong{font-size:17px!important}}
+
+/* Statistics mirrors home: centred fixed overview above the rail, independently scrolling records. */
+.phone.view-stats{height:100dvh!important;min-height:0!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;padding:calc(20px + env(safe-area-inset-top,0px)) 20px 0!important}
+.phone.view-stats>.title-line{display:none!important}
+.phone.view-stats .analysis-page{display:flex!important;flex-direction:column!important;flex:1 1 0!important;min-height:0!important;width:100%!important;max-width:none!important;margin:0!important;overflow:hidden!important}
+.analysis-page>.analysis-fixed{display:flex;flex-direction:column;flex:0 0 auto;height:calc(58dvh - 32px - env(safe-area-inset-top,0px));min-height:0;width:100%;padding:0;box-sizing:border-box}
+.analysis-fixed>.analysis-header{flex:0 0 auto;width:100%;padding:0 0 8px!important}
+.analysis-fixed .analysis-heading-row{width:100%;max-width:420px;margin:0 auto}
+.analysis-fixed .analysis-balance{font-size:clamp(32px,10vw,54px)}
+.analysis-fixed .analysis-dates{max-width:420px;margin:10px auto 4px!important}
+.analysis-fixed .analysis-periods{max-width:360px;margin:4px auto!important}
+.phone.view-stats .analysis-fixed>.analysis-chart-block{display:flex!important;flex:1 1 0!important;min-height:0!important;width:100%!important;margin:8px auto 0!important;padding:0!important}
+.analysis-fixed .chart-navigation{display:flex;flex-direction:column;flex:1 1 0;min-height:0;width:100%}
+.analysis-fixed .daily-expense-chart.chart-fitted{display:flex!important;flex-direction:column!important;flex:1 1 0!important;min-height:0!important;width:100%!important;margin:0!important;padding:0!important}
+.analysis-fixed .period-chart-svg{flex:1 1 0!important;min-height:0!important;height:auto!important;width:100%!important;max-width:100%!important}
+.analysis-fixed .chart-summary{flex:0 0 auto;margin-bottom:6px}
+.analysis-fixed .chart-date-labels{flex:0 0 auto;margin-top:5px}
+.analysis-fixed .comparison-legend{flex:0 0 auto;margin-top:5px}
+.analysis-fixed .chart-fitted .daily-chart-caption{flex:0 0 auto;min-height:18px;padding-top:5px}
+.analysis-fixed .chart-gesture-hint{flex:0 0 auto;margin:4px 0 0!important;font-size:8px!important}
+.analysis-page>.analysis-records{flex:1 1 0!important;min-height:0!important;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;box-sizing:border-box;width:100%!important;max-width:none!important;padding:12px 0 calc(28px + env(safe-area-inset-bottom,0px)) 46px!important;margin:12px 0 0!important;scrollbar-width:none}
+.analysis-page>.analysis-records::-webkit-scrollbar{display:none}
+.analysis-page>.analysis-records:focus-visible{outline:1px solid var(--user-accent);outline-offset:-2px}
+@media(max-height:650px){.analysis-fixed .analysis-balance{font-size:30px}.analysis-fixed .analysis-dates{margin:2px auto!important}.analysis-fixed .analysis-dates>.date-trigger{min-height:34px!important;font-size:14px!important}.analysis-fixed .analysis-periods>button{height:36px}.analysis-fixed .analysis-heading-row>.picker-button,.analysis-fixed .budget-picker-trigger{height:36px!important}.analysis-fixed>.analysis-header{padding-bottom:0!important}.analysis-fixed .comparison-legend,.analysis-fixed .chart-gesture-hint{font-size:7px!important;line-height:1.2!important}}
+@media(max-width:360px){.phone.view-stats{padding-inline:12px!important}.analysis-page>.analysis-records{padding-left:46px!important}}

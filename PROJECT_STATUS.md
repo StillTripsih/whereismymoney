@@ -70,3 +70,9 @@ Publication verified 2026-11-20: 592a5573ea374adc8528702f7d329f1df91185ee; Actio
 ## 2026-11-20 — categories belong to expenses; wallet has no expense list
 
 Removed category selection and its required validation from budget creation/editing. New budgets store an empty category array; existing legacy arrays are retained, not erased. Expenses continue selecting categories independently and are counted by budget ID. Removed the duplicate expense list from Wallet; ledger records and analytics remain intact. Verified: 82 tests, TypeScript, production build; phone UI remains unverified.
+
+Publication verified: 46f6ea50a3fae9c6955523a8d7c95c385001c373; Actions 44684921694 succeeded. Public JS/CSS matched the checked build.
+
+## 2026-11-20 — fixed statistics overview and independent list scrolling
+
+Grouped statistics controls and chart into a fixed-height top region centred across the full app width above the navigation rail. Category totals, search and transactions scroll in their own lower region with clearance for the existing rail. Chart pan/pinch behaviour and data logic are unchanged. TypeScript and production build checked; phone rendering remains unverified.
