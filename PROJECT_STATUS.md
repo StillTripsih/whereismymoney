@@ -64,3 +64,9 @@ Verification for expense-budget reassignment: 76 tests passed, TypeScript passed
 - Budget validation accepts signed balances without changing storage schema. Budget editing starts the new plan today, displays the current remaining balance, and reconstructs funding so existing purchases today are not counted twice. Expired edited plans get an upcoming end date. Category cards show actual remaining money instead of a zero daily allowance.
 - Wallet lists every budget with its native signed balance and optional display-currency conversion. All/one budget filters the expense ledger. Currency changes only alter display; rate refresh, converter and rate history live in the currency settings. Existing separate savings are retained and accessible separately, not silently mixed into budget totals.
 - Verification: 81 automated tests, TypeScript and production build. Tests cover debt spending, replenishment, signed/zero backup roundtrips, reserve-plan rebasing, independent currency balances, missing FX and keypad expressions. Phone visual/interaction checks remain unverified under the existing browser-testing restriction.
+
+Publication verified 2026-11-20: 592a5573ea374adc8528702f7d329f1df91185ee; Actions 44683912662 succeeded. Public HTML, JS and CSS HTTP 200; index-B52Whc_2.js and index-C3zBqRGn.css match the checked build. Native phone UI remains unverified.
+
+## 2026-11-20 — categories belong to expenses; wallet has no expense list
+
+Removed category selection and its required validation from budget creation/editing. New budgets store an empty category array; existing legacy arrays are retained, not erased. Expenses continue selecting categories independently and are counted by budget ID. Removed the duplicate expense list from Wallet; ledger records and analytics remain intact. Verified: 82 tests, TypeScript, production build; phone UI remains unverified.

@@ -595,7 +595,7 @@ export default function FinanceApp() {
           {list(rows)}
         </>
       )}
-      {view==='savings'&&<SavingsPanel data={data} ready={ready} onSave={persist} selectedBudget={walletBudget} onSelectedBudget={setWalletBudget} onEntry={entry=>openDraft({entry})}/>}
+      {view==='savings'&&<SavingsPanel data={data} ready={ready} onSave={persist} selectedBudget={walletBudget} onSelectedBudget={setWalletBudget}/>}
       {view==='categories'&&<Screen title={tr("Категории")} heading={<span/>} back={()=>nav('more')}><CategoriesSettings data={data} ready={ready} onSave={persist}/></Screen>}
       {view === 'more' && (
         <>

@@ -27,7 +27,7 @@ export function budgetStatus(b:Budget,entries:Entry[],day:string) {
 
 export type CategoryBudget=Budget & {id:string;name:string;categories:string[]};
 export function validCategoryBudgets(value:any): value is CategoryBudget[]{
- return Array.isArray(value)&&value.length<=50&&new Set(value.map(b=>b?.id)).size===value.length&&value.every(b=>!!b&&typeof b.id==='string'&&b.id.length>0&&b.id.length<=80&&typeof b.name==='string'&&b.name.trim().length>0&&b.name.length<=80&&Array.isArray(b.categories)&&b.categories.length>0&&b.categories.length<=100&&new Set(b.categories).size===b.categories.length&&b.categories.every((id:any)=>typeof id==='string'&&id.length>0&&id.length<=80)&&validBudget(b));
+ return Array.isArray(value)&&value.length<=50&&new Set(value.map(b=>b?.id)).size===value.length&&value.every(b=>!!b&&typeof b.id==='string'&&b.id.length>0&&b.id.length<=80&&typeof b.name==='string'&&b.name.trim().length>0&&b.name.length<=80&&Array.isArray(b.categories)&&b.categories.length<=100&&new Set(b.categories).size===b.categories.length&&b.categories.every((id:any)=>typeof id==='string'&&id.length>0&&id.length<=80)&&validBudget(b));
 }
 export function categoryBudgetStatus(b:CategoryBudget,entries:Entry[],day:string){return budgetStatus(b,entries.filter(e=>b.categories.includes(e.category)),day);}
 export function rebaseBudgetCurrency(b:Budget,next:Currency,rates:Parameters<typeof convert>[3]):Budget|null {
