@@ -1,3 +1,6 @@
+import {AmountKeypad} from './amount-keypad';
+import {amountKey} from '@/lib/amount-keypad';
+import {currentBudgetBalance,budgetFundingForBalance} from '@/lib/budget-balance';
 import {BudgetFunding} from './budget-funding';
 import type {ReactNode} from 'react';
 import {BudgetPicker} from './budget-picker';
@@ -24,7 +27,7 @@ import type {Draft} from './entry-form';
 export function BudgetHome({data,day,ready,onBudget,onBudgets,onSave,onDraft,tracked,setTracked,children}:{children?:ReactNode;data:State;day:string;ready:boolean;tracked:string;setTracked:(id:string)=>void;onBudgets:(b:CategoryBudget[])=>Promise<void>;onBudget:(b:Budget)=>Promise<void>;onSave:(e:Entry[])=>Promise<void>;onDraft:(d:Draft)=>void}){
  const scoped=data.categoryBudgets?.find(b=>b.id===tracked);
  const b=tracked===MAIN_BUDGET_ID?data.budget:scoped;
- const trackedEntries=entriesForBudget(data.entries,tracked).map(e=>({...e,rates:data.rates}));
+ const trackedEntries=entriesForBudget(data.entries,tracked);
  const [moreCategories,setMoreCategories]=useState(false);
  const [editing,setEditing]=useState(false),[expr,setExpr]=useState(''),[selected,setSelected]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false);
  const lock=useRef(false);const directCamera=useRef<HTMLInputElement>(null);
@@ -45,15 +48,15 @@ export function BudgetHome({data,day,ready,onBudget,onBudgets,onSave,onDraft,tra
    <p className="selected-category" aria-live="polite">{selected?categoryLabel(activeCats.find(c=>c.id===selected)):""}</p>
    {error&&<p className="error" role="alert">{tr(error)}</p>}
    <div className="expense-control-row"><div className="entry-methods"><button data-direct-action="true" aria-label={tr("Чек")} onClick={()=>directCamera.current?.click()}><Camera/></button><button aria-label={tr("Голос")} onClick={()=>onDraft({category:selected,method:'voice',budgetId:tracked})}><Mic/></button></div><AmountDisplay text={expr||'0'} currency={currency}/><button className="primary save-circle" aria-label={tr("Сохранить расход")} disabled={!ready||busy||!amount||amount<=0} onClick={save}><Check/></button></div>
-   <div className="home-keypad">{['7','8','9','÷','4','5','6','×','1','2','3','−','0','⌫','=','+'].map(key=><button key={key} className={['÷','×','−','+','='].includes(key)?'operator':''} aria-label={key==='⌫'?tr("Удалить цифру"):key} onClick={()=>{setError('');if(key==='C')setExpr('');else if(key==='⌫')setExpr(expr.slice(0,-1));else if(key==='='){try{setExpr(String(currency==='THB'?Math.round(calculate(expr)):calculate(expr)))}catch(e:any){setError(tr(e.message))}}else setExpr(expr+({'÷':'/','×':'*','−':'-'}[key]||key))}}>{key}</button>)}</div>
-  {currency!=='THB'&&<button className="decimal-key" aria-label={tr("Десятичная точка")} onClick={()=>setExpr(expr+'.')}>.</button>}</section>
+   <AmountKeypad currency={currency} onKey={key=>{setError('');try{setExpr(amountKey(expr,key,currency))}catch(e:any){setError(tr(e.message))}}}/>
+</section>
 
  {children}</div></div>;
 }
 export function BudgetEditor({value,categories,ready,onSave,onCancel,available,data,scope,budgetId="main"}:{budgetId?:string;value?:Budget;data?:State;scope?:string[];available?:Currency[];categories:State['categories'];ready:boolean;onSave:(b:Budget)=>Promise<void>;onCancel?:()=>void}){
  const now=today(),endOfMonth=new Date(Number(now.slice(0,4)),Number(now.slice(5,7)),0).getDate();
- const [amount,setAmount]=useState(String(value?.amount?(value.currency==='THB'?Math.round(value.amount):value.amount):'')),[daily,setDaily]=useState(value?.dailyLimit!==undefined?String(value.dailyLimit):''),[currency,setCurrency]=useState<Currency>(value?.currency||data?.display||'THB'),[start,setStart]=useState(value?.start||now),[end,setEnd]=useState(value?.end||now.slice(0,8)+endOfMonth),[policy,setPolicy]=useState<Budget['policy']>(value?.policy||'spread'),[quick,setQuick]=useState(value?.quick||['cat-0','cat-1','cat-fun']),[error,setError]=useState(''),[busy,setBusy]=useState(false);
- async function save(){setError('');try{if(daily&&currencyInput(daily,currency)<=0)throw Error(tr('Дневной лимит должен быть больше нуля'));const next={amount:currencyInput(amount,currency),currency,start,end,policy,quick,dailyLimit:daily?currencyInput(daily,currency):undefined};if(!validBudget(next))throw Error(tr("Укажите сумму больше нуля и период до 366 дней"));setBusy(true);await onSave(next)}catch(e:any){setError(tr(e.message))}finally{setBusy(false)}}
+ const [amount,setAmount]=useState(()=>{const balance=value&&data?currentBudgetBalance(data,value,budgetId,now):value?.amount;return balance==null?'':String(value?.currency==='THB'?Math.round(balance):balance)}),[daily,setDaily]=useState(value?.dailyLimit!==undefined?String(value.dailyLimit):''),[currency,setCurrency]=useState<Currency>(value?.currency||data?.display||'THB'),[start,setStart]=useState(now),[end,setEnd]=useState(value?.end&&value.end>=now?value.end:now.slice(0,8)+endOfMonth),[policy,setPolicy]=useState<Budget['policy']>(value?.policy||'spread'),[quick,setQuick]=useState(value?.quick||['cat-0','cat-1','cat-fun']),[error,setError]=useState(''),[busy,setBusy]=useState(false);
+ async function save(){setError('');try{if(daily&&currencyInput(daily,currency)<=0)throw Error(tr('Дневной лимит должен быть больше нуля'));const next={amount:budgetFundingForBalance(currencyInput(amount,currency),currency,start,end,data,budgetId,now),currency,start,end,policy,quick,dailyLimit:daily?currencyInput(daily,currency):undefined};if(!validBudget(next))throw Error(tr("Проверьте баланс и период до 366 дней"));setBusy(true);await onSave(next)}catch(e:any){setError(tr(e.message))}finally{setBusy(false)}}
  return <section className="budget-editor"><div className="row spaced">{onCancel&&<button className="text-button budget-back" aria-label={tr("Назад")} onClick={onCancel}>←</button>}</div>
  <div className="input-pair"><div className="field"><BudgetFunding amount={amount} currency={currency} start={start} end={end} data={data} budgetId={budgetId} onChange={setAmount}/></div><Picker value={currency} onChange={v=>{const next=v as Currency;const n=convert(Number(amount||0),currency,next,data?.rates||{THB:1,USD:null,UAH:null,date:now,source:"manual"});if(n!==null){setAmount(String(Math.round(n*100)/100));setCurrency(next);setDaily("")}}} options={(available||[currency]).map(c=>[c,c])} label={tr("Валюта бюджета")}/></div>
  <BudgetPeriod start={start} end={end} onStart={()=>setStart(now)} onEnd={setEnd}/><BudgetPlan amount={amount} currency={currency} start={start} end={end} daily={daily} onDaily={setDaily} data={data} budgetId={budgetId} scope={scope}/>

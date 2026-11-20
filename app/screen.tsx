@@ -1,3 +1,4 @@
+import {createPortal} from 'react-dom';
 import {usePageScrollLock} from './page-scroll-lock';
 import {tr, localeCode, categoryLabel} from '@/lib/i18n';
 'use client';
@@ -90,6 +91,7 @@ export function Screen({
   forward,
   heading,
   hideBack = false,
+  className = "",
 }: {
   title: string;
   back: () => void;
@@ -99,18 +101,20 @@ export function Screen({
   forward?: () => void;
   heading?: ReactNode;
   hideBack?: boolean;
+  className?:string;
 }) {
   const touch = useRef<{ x: number; y: number; edge: 'left' | 'right' } | null>(
     null,
   );
   usePageScrollLock(true);
-  return (
+  return createPortal(
     <section
-      className="page-screen"
+      className={"page-screen "+className}
       aria-label={title}
       role="dialog" aria-modal="true"
       onClick={e=>{if(e.target===e.currentTarget&&!busy)back()}}
       onTouchStart={(e) => {
+        e.stopPropagation();
         const p = e.touches[0],
           w = window.innerWidth;
         if (p.clientX < 36 || p.clientX > w - 36)
@@ -122,6 +126,7 @@ export function Screen({
         else touch.current = null;
       }}
       onTouchEnd={(e) => {
+        e.stopPropagation();
         const a = touch.current;
         touch.current = null;
         if (!a || busy) return;
@@ -148,6 +153,6 @@ export function Screen({
         <div className="screen-action">{action}</div>
       </header>
       <div className="screen-body">{children}</div></div>
-    </section>
+    </section>,document.body
   );
 }

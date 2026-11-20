@@ -28,7 +28,7 @@ test('budgets and theme round-trip without losing ledger; legacy exports remain 
 });
 test('invalid budgets cannot be imported: empty scopes, duplicate IDs, amounts or dates',()=>{
  assert.equal(validCategoryBudgets([budget]),true);
- for(const value of [[budget,budget],[{...budget,categories:[]}],[{...budget,categories:['cat-0','cat-0']}],[{...budget,amount:-1}],[{...budget,end:'2026-10-31'}],[{...budget,name:' '}]] ){
+ for(const value of [[budget,budget],[{...budget,categories:[]}],[{...budget,categories:['cat-0','cat-0']}],[{...budget,amount:-1e13}],[{...budget,end:'2026-10-31'}],[{...budget,name:' '}]] ){
  assert.equal(validCategoryBudgets(value),false);assert.throws(()=>validateState({...initialState(),categoryBudgets:value}));
  }
 });

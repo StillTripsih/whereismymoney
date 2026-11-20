@@ -57,3 +57,10 @@ Removed backgrounds, borders, outlines, shadows and decorative pseudo-elements f
 The shared transaction editor now shows the selected budget and the common budget picker. Saving can move that single expense to another budget from both home and analytics. Unchanged amount keeps the original currency, rate snapshot, receipt group and timestamp. Invalid target budgets are rejected; cancel does not persist. Storage format unchanged.
 
 Verification for expense-budget reassignment: 76 tests passed, TypeScript passed, production Pages build passed. Browser/phone interaction remains unverified under the existing restriction.
+
+## 2026-11-20 — wide amount input, signed balances and budget wallet
+
+- Home and budget amounts use the same AmountKeypad. Amount sheets render via a body portal, have viewport-wide mobile sizing, and fit the complete number without truncation. Daily caps remain positive; balances accept zero and debt.
+- Budget validation accepts signed balances without changing storage schema. Budget editing starts the new plan today, displays the current remaining balance, and reconstructs funding so existing purchases today are not counted twice. Expired edited plans get an upcoming end date. Category cards show actual remaining money instead of a zero daily allowance.
+- Wallet lists every budget with its native signed balance and optional display-currency conversion. All/one budget filters the expense ledger. Currency changes only alter display; rate refresh, converter and rate history live in the currency settings. Existing separate savings are retained and accessible separately, not silently mixed into budget totals.
+- Verification: 81 automated tests, TypeScript and production build. Tests cover debt spending, replenishment, signed/zero backup roundtrips, reserve-plan rebasing, independent currency balances, missing FX and keypad expressions. Phone visual/interaction checks remain unverified under the existing browser-testing restriction.

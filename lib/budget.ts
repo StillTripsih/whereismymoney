@@ -2,7 +2,7 @@ import {currencyCodes} from './currency-catalog';
 import {convert,daysBetween,shiftDate,validDate,type Currency,type Entry} from './finance';
 export type Budget = {dailyLimit?:number;amount:number;currency:Currency;start:string;end:string;policy:'spread'|'reserve';quick:string[]};
 export function validBudget(b:any): b is Budget {
- return !!b && (b.dailyLimit===undefined||(Number.isFinite(b.dailyLimit)&&b.dailyLimit>0&&b.dailyLimit<=1e12&&Math.abs(b.dailyLimit*100-Math.round(b.dailyLimit*100))<.001)) && Number.isFinite(b.amount) && b.amount>0 && b.amount<=1e12 && Math.abs(b.amount*100-Math.round(b.amount*100))<0.001 && (currencyCodes as readonly string[]).includes(b.currency) && validDate(b.start) && validDate(b.end) && b.start<=b.end && daysBetween(b.start,b.end)<=366 && ['spread','reserve'].includes(b.policy) && Array.isArray(b.quick) && b.quick.length<=6 && b.quick.every((id:any)=>typeof id==='string' && id.length<=80);
+ return !!b && (b.dailyLimit===undefined||(Number.isFinite(b.dailyLimit)&&b.dailyLimit>0&&b.dailyLimit<=1e12&&Math.abs(b.dailyLimit*100-Math.round(b.dailyLimit*100))<.001)) && Number.isFinite(b.amount) && Math.abs(b.amount)<=1e12 && Math.abs(b.amount*100-Math.round(b.amount*100))<0.001 && (currencyCodes as readonly string[]).includes(b.currency) && validDate(b.start) && validDate(b.end) && b.start<=b.end && daysBetween(b.start,b.end)<=366 && ['spread','reserve'].includes(b.policy) && Array.isArray(b.quick) && b.quick.length<=6 && b.quick.every((id:any)=>typeof id==='string' && id.length<=80);
 }
 export function budgetStatus(b:Budget,entries:Entry[],day:string) {
  const byDay=new Map<string,number>();let missing=0;
@@ -22,7 +22,7 @@ export function budgetStatus(b:Budget,entries:Entry[],day:string) {
  const remaining=pool-spent;
  const futureDays=active?days-1:days;
  const futurePool=remaining-(b.policy==='reserve'&&active?Math.max(0,allowance-spent):0);
- return {active,missing,days,spent:spent/100,allowance:allowance/100,todayLeft:(allowance-spent)/100,totalLeft:(remaining+reserve)/100,reserve:reserve/100,spendable:remaining/100,future:futureDays?Math.max(0,b.dailyLimit===undefined?Math.floor(futurePool/futureDays):Math.min(Math.round(b.dailyLimit*100),futurePool))/100:0,futureDays};
+ return {active,missing,days,spent:spent/100,allowance:allowance/100,todayLeft:(active&&remaining+reserve<0?remaining+reserve:allowance-spent)/100,totalLeft:(remaining+reserve)/100,reserve:reserve/100,spendable:remaining/100,future:futureDays?Math.max(0,b.dailyLimit===undefined?Math.floor(futurePool/futureDays):Math.min(Math.round(b.dailyLimit*100),futurePool))/100:0,futureDays};
 }
 
 export type CategoryBudget=Budget & {id:string;name:string;categories:string[]};

@@ -1,0 +1,2 @@
+import {calculate,type Currency} from './finance';
+export function amountKey(raw:string,key:string,currency:Currency){if(key==='C')return '';if(key==='⌫')return raw.slice(0,-1);if(key==='±')return raw.startsWith('-')?raw.slice(1):'-'+raw;if(key==='='){const amount=calculate(raw);return String(currency==='THB'?Math.round(amount):Math.round(amount*100)/100)}const text=({'÷':'/','×':'*','−':'-'} as Record<string,string>)[key]||key;return raw==='0'&&/^\d$/.test(text)?text:raw+text}
