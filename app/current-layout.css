@@ -323,3 +323,74 @@ html,body,*{scrollbar-width:none!important}
 .ai-compact,.ai-compact input{min-width:0;max-width:100%}
 .ai-compact input{width:100%;font-size:16px;box-sizing:border-box}
 .ai-paste{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px;border:1px solid var(--ui-group-line);border-radius:14px}
+
+/* Reference skin 2026-11-26. Surfaces only: preserve existing grids, type, icon and control sizes. */
+:root{
+ --ui-soft-panel:linear-gradient(180deg,color-mix(in srgb,var(--user-ink) 3.5%,transparent),color-mix(in srgb,var(--user-ink) 1.5%,transparent)),var(--user-bg);
+ --ui-soft-line:color-mix(in srgb,var(--user-ink) 6%,transparent);
+ --ui-accent-line:color-mix(in srgb,var(--user-accent) 35%,transparent);
+ --ui-accent-glow:color-mix(in srgb,var(--user-accent) 42%,transparent);
+ --ui-active-gradient:linear-gradient(180deg,color-mix(in srgb,var(--user-accent) 76%,#09090b),color-mix(in srgb,var(--user-accent) 50%,#09090b));
+ --ui-sheet-gradient:linear-gradient(180deg,color-mix(in srgb,var(--user-accent) 9%,transparent),color-mix(in srgb,var(--user-ink) 1.5%,transparent)),var(--ui-elevated-surface);
+}
+.bottom-nav{background:var(--ui-soft-panel)!important;box-shadow:inset 0 0 0 1px var(--ui-soft-line)!important;border-radius:999px!important}
+.bottom-nav button{border-radius:14px!important}
+.bottom-nav button.active,.bottom-nav button[aria-current=page]{
+ background:radial-gradient(circle at center,color-mix(in srgb,var(--user-accent) 42%,transparent),color-mix(in srgb,var(--user-accent) 22%,transparent))!important;
+ box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--user-accent) 45%,transparent),0 0 14px var(--ui-accent-glow)!important;
+}
+.bottom-nav button.active:before,.bottom-nav button[aria-current=page]:before{content:'';position:absolute;inset-inline-start:-3px;top:calc(50% - 8px);width:3px;height:16px;border-radius:99px;background:var(--user-accent);box-shadow:0 0 8px var(--ui-accent-glow);pointer-events:none}
+.phone.home-minimal .quick-categories{background:var(--ui-soft-panel)!important;border-radius:999px!important;box-shadow:inset 0 0 0 1px var(--ui-soft-line)!important}
+.phone.home-minimal .quick-categories>button{border-radius:999px!important}
+.phone.home-minimal .quick-categories>button.chosen,
+.phone.home-minimal .quick-categories>button[aria-pressed=true],
+.phone.home-minimal .quick-categories>button[aria-expanded=true],
+:is(.budget-select-options,.picker-options,.category-tiles,.currency-select-buttons,.wallet-currency-choice,.analysis-periods,.budget-period-presets)>button[aria-pressed=true],
+.picker-overlay.budget-list-picker .picker-options>button[aria-pressed=true],
+.policy-inline button[aria-pressed=true],.chip.selected{
+ background:var(--ui-active-gradient)!important;color:#fff!important;
+ box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--user-accent) 35%,transparent),inset 0 1px 0 #ffffff2e,0 2px 12px var(--ui-accent-glow)!important;
+}
+.amount-keypad{background:linear-gradient(180deg,color-mix(in srgb,var(--user-ink) 1.8%,transparent),color-mix(in srgb,var(--user-accent) 2.2%,transparent))!important;border-radius:22px!important;box-shadow:inset 0 0 0 1px var(--ui-accent-line),inset 0 0 24px color-mix(in srgb,var(--user-accent) 3%,transparent)!important}
+.amount-keypad .home-keypad>button{border-radius:14px!important}
+.amount-keypad .home-keypad>button:active:not(:disabled){background:color-mix(in srgb,var(--user-ink) 6%,transparent)!important}
+.amount-keypad .home-keypad>button.operator:active:not(:disabled){background:color-mix(in srgb,var(--user-accent) 14%,transparent)!important}
+.page-screen .screen-window,.picker-overlay.picker-overlay>section,.budget-select-window,
+.category-editor-overlay>section,.category-budget-modal>.budget-editor,.wheel-overlay>section,.app-dialog{
+ background:var(--ui-sheet-gradient)!important;
+ box-shadow:inset 0 0 0 1px var(--ui-soft-line),0 18px 48px #00000040,0 0 28px color-mix(in srgb,var(--user-accent) 5%,transparent)!important;
+}
+.page-screen .screen-bar{background:transparent!important;box-shadow:inset 0 -1px 0 var(--ui-soft-line)!important}
+/* Use insets inside already full-width options; never apply these to icon-only controls. */
+.budget-select-options>button,.flat-list-picker .picker-options>button{
+ box-sizing:border-box!important;padding-inline:18px!important;border-radius:18px!important;
+ background:var(--ui-soft-panel)!important;box-shadow:inset 0 0 0 1px var(--ui-soft-line)!important;
+}
+.budget-select-options>button>span,.flat-list-picker .picker-options>button>.category-option{min-width:0;overflow-wrap:anywhere}
+.budget-select-options>button>svg,.flat-list-picker .picker-options>button>span:last-child{flex-shrink:0}
+.ai-paste,.chip:not(.selected){background:var(--ui-soft-panel);border-color:var(--ui-soft-line)}
+/* Give fixed-composition panels visual breathing room without moving their contents. */
+.phone.view-stats .analysis-fixed,.account-wallet-total{position:relative;isolation:isolate;background:transparent!important;box-shadow:none!important}
+.phone.view-stats .analysis-fixed:before,.account-wallet-total:before{content:'';position:absolute;inset:-8px -10px;border-radius:20px;background:var(--ui-soft-panel);box-shadow:inset 0 0 0 1px var(--ui-soft-line);z-index:-1;pointer-events:none}
+/* Confirmation glyphs keep their existing uniform size and white stroke. */
+.page-screen .primary.save-circle,.phone .primary.save-circle,.primary.save-circle,
+.primary.save-top,.unified-confirm{
+ background:var(--ui-active-gradient)!important;color:#fff!important;border-radius:999px!important;
+ box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--user-accent) 38%,transparent),inset 0 1px 0 #ffffff24,0 3px 14px var(--ui-accent-glow)!important;
+}
+.primary.save-circle:disabled,.primary.save-top:disabled,.unified-confirm:disabled{opacity:.35!important;box-shadow:none!important}
+.primary.save-circle svg,.primary.save-top svg,.unified-confirm svg{color:#fff!important}
+@media(hover:hover){
+ .bottom-nav button:not(.active):hover{background:color-mix(in srgb,var(--user-accent) 8%,transparent)!important}
+ .amount-keypad .home-keypad>button:not(:disabled):hover{background:color-mix(in srgb,var(--user-ink) 4%,transparent)!important}
+}
+@media(prefers-reduced-motion:no-preference){
+ .bottom-nav button,.quick-categories>button,.amount-keypad .home-keypad>button,.budget-select-options>button,.flat-list-picker .picker-options>button,.primary.save-circle{transition:background-color 150ms ease-out,box-shadow 150ms ease-out,transform 150ms ease-out}
+ .amount-keypad .home-keypad>button:active:not(:disabled),.primary.save-circle:active:not(:disabled){transform:scale(.96)!important}
+}
+@media(prefers-reduced-motion:reduce){.bottom-nav button,.quick-categories>button,.amount-keypad .home-keypad>button,.primary.save-circle{transition:none!important;transform:none!important}}
+@media(forced-colors:active){.budget-select-options>button,.flat-list-picker .picker-options>button,.primary.save-circle{outline:1px solid ButtonText}}
+
+/* Keep selected option surfaces above neutral option styling. */
+.budget-select-options>button[aria-pressed=true],.flat-list-picker .picker-options>button[aria-pressed=true]{background:var(--ui-active-gradient)!important;box-shadow:inset 0 0 0 1px var(--ui-accent-line),inset 0 1px 0 #ffffff2e,0 2px 12px var(--ui-accent-glow)!important}
+.daily-summary .daily-progress>i{background:linear-gradient(90deg,color-mix(in srgb,var(--user-accent) 65%,transparent),var(--user-accent))!important;box-shadow:0 0 12px color-mix(in srgb,var(--user-accent) 50%,transparent),0 0 4px var(--ui-accent-glow)!important}

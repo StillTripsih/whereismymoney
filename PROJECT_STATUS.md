@@ -95,3 +95,13 @@ Publication verified 2026-11-26: commit a60c811d04a39903dbd09c665e0868b9e4422792
 - Keep personal Google credential outside financial exports in device storage; real generation probe, available-model discovery, modern key format and separate paste button. Successful saved connection survives app updates; failed replacement does not overwrite it.
 - Google 429/503/authentication errors are distinct; bounded retry for temporary server failures. UI shows last successful check rather than claiming continuous service availability.
 - Browser/mobile and real personal-key checks not performed due session restriction/no credential.
+
+Release evidence: commit 8942cb70fbec55a13a2e0ceb401f5de5fdc3c38f; Actions 45784999244 attempt 2 succeeded (first attempt Pages metadata transient failure). 85 tests, typecheck/build passed. Seven public app files byte-match verified build; worker behavior/assets equivalent, cache f8f70e2e3ab6 verified using Linux order. Actual mobile UI/clipboard and personal API key unverified.
+
+
+## 2026-11-26 — supplied HTML surface style and instant home return
+- Source reference: user supplied where_is_my_money.html. Used only visual CSS language, not its scripts, data, external CDNs, or instructions.
+- Applied soft gradient panels, selected red capsule buttons, subtle neon glow, unified confirmation surfaces and text-option inline breathing room. Existing grids, dimensions, font/icon sizes and placement preserved; no new dependencies.
+- Home returns instantly on finger release; touch state is tracked through document-level release/cancel events. Active touch, editing/modal and hidden-page states defer reset. No 30-second idle wait remains.
+- Rollback source and manifest: ../wimm-rollback-8942cb70/. Previous published commit 8942cb70fbec55a13a2e0ceb401f5de5fdc3c38f. Revert with a new forward commit only; preserve local financial storage and personal keys.
+- Browser/real phone visual and gesture checks remain unavailable under existing session restriction. Automated controller tests are not a phone check.

@@ -1,3 +1,4 @@
+import {createHomeScrollReturn} from '@/lib/home-scroll-return';
 import {AmountKeypad} from './amount-keypad';
 import {amountKey} from '@/lib/amount-keypad';
 import {currentBudgetBalance,budgetFundingForBalance} from '@/lib/budget-balance';
@@ -25,16 +26,26 @@ import {calculate,money,today,daysBetween,convert,entriesForBudget,MAIN_BUDGET_I
 import {CatIcon,Picker,categoryOptions} from './ui';
 import type {Draft} from './entry-form';
 export function BudgetHome({data,day,ready,onBudget,onBudgets,onSave,onDraft,tracked,setTracked,children}:{children?:ReactNode;data:State;day:string;ready:boolean;tracked:string;setTracked:(id:string)=>void;onBudgets:(b:CategoryBudget[])=>Promise<void>;onBudget:(b:Budget)=>Promise<void>;onSave:(e:Entry[])=>Promise<void>;onDraft:(d:Draft)=>void}){
- const lower=useRef<HTMLDivElement>(null);const idle=useRef<ReturnType<typeof setTimeout>|null>(null);const touching=useRef(false);
- function stopReturn(){if(idle.current)clearTimeout(idle.current)}
- function returnHome(){lower.current?.scrollTo({top:0,behavior:'auto'})}
- function scheduleReturn(){stopReturn();if(!lower.current?.scrollTop)return;idle.current=setTimeout(()=>{if(touching.current||document.querySelector('[role="dialog"],.sheet')||lower.current?.contains(document.activeElement)&&document.activeElement?.matches('input,textarea,select')){scheduleReturn();return}returnHome()},30000)}
- useEffect(()=>{returnHome();return stopReturn},[tracked]);
+ const [editing,setEditing]=useState(false),[expr,setExpr]=useState(''),[selected,setSelected]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false);
+ const lower=useRef<HTMLDivElement>(null);const autoReturn=useRef<ReturnType<typeof createHomeScrollReturn>|null>(null);
+ function returnHome(){autoReturn.current?.reset()}
+ useEffect(()=>{
+  const element=lower.current;if(!element)return;
+  let fingers=0;const pointers=new Set<number>();
+  const controller=createHomeScrollReturn({isScrolled:()=>element.scrollTop>1,isBlocked:()=>fingers>0||pointers.size>0||document.hidden||!!document.querySelector('[role="dialog"][aria-modal="true"]')||!!(element.contains(document.activeElement)&&document.activeElement?.matches('input,textarea,select,[contenteditable=true]')),reset:()=>element.scrollTo({top:0,behavior:'instant' as ScrollBehavior})});
+  autoReturn.current=controller;element.scrollTop=0;
+  const activity=()=>controller.activity();
+  const down=(event:PointerEvent)=>{pointers.add(event.pointerId);controller.hold()};
+  const up=(event:PointerEvent)=>{pointers.delete(event.pointerId);controller.release()};
+  const touch=(event:TouchEvent)=>{fingers=event.touches.length;if(fingers)controller.hold();else controller.release()};
+  const resume=()=>{pointers.clear();fingers=0;if(!document.hidden)controller.reset()};
+  element.addEventListener('scroll',activity,{passive:true});element.addEventListener('wheel',activity,{passive:true});element.addEventListener('click',activity);element.addEventListener('keydown',activity);element.addEventListener('pointerdown',down,{passive:true});element.addEventListener('touchstart',touch,{passive:true});document.addEventListener('pointerup',up,{passive:true});document.addEventListener('pointercancel',up,{passive:true});document.addEventListener('touchend',touch,{passive:true});document.addEventListener('touchcancel',touch,{passive:true});document.addEventListener('visibilitychange',resume);window.addEventListener('blur',resume);
+  return()=>{controller.dispose();autoReturn.current=null;element.removeEventListener('scroll',activity);element.removeEventListener('wheel',activity);element.removeEventListener('click',activity);element.removeEventListener('keydown',activity);element.removeEventListener('pointerdown',down);element.removeEventListener('touchstart',touch);document.removeEventListener('pointerup',up);document.removeEventListener('pointercancel',up);document.removeEventListener('touchend',touch);document.removeEventListener('touchcancel',touch);document.removeEventListener('visibilitychange',resume);window.removeEventListener('blur',resume)};
+ },[tracked,editing]);
  const scoped=data.categoryBudgets?.find(b=>b.id===tracked);
  const b=tracked===MAIN_BUDGET_ID?data.budget:scoped;
  const trackedEntries=entriesForBudget(data.entries,tracked);
  const [moreCategories,setMoreCategories]=useState(false);
- const [editing,setEditing]=useState(false),[expr,setExpr]=useState(''),[selected,setSelected]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false);
  const lock=useRef(false);const directCamera=useRef<HTMLInputElement>(null);
  const currency=b?.currency||data.display;
  const convertedAmount=b?convert(b.amount,b.currency,currency,data.rates):null;
@@ -46,7 +57,7 @@ export function BudgetHome({data,day,ready,onBudget,onBudgets,onSave,onDraft,tra
  let amount:number|null=null;try{amount=currency==='THB'?Math.round(calculate(expr)):calculate(expr)}catch{}
  async function save(){if(lock.current)return;setError('');if(!amount||amount<=0){setError(tr("Введите сумму расхода"));return;}if(selected&&!activeCats.some(c=>c.id===selected)){setError(tr("Выберите категорию"));return;}lock.current=true;setBusy(true);try{await onSave([{id:crypto.randomUUID(),group:crypto.randomUUID(),amount,currency,kind:'expense',category:selected||'cat-unknown',date:day,note:'',rates:{...data.rates},created:new Date().toISOString(),budgetId:tracked}]);setExpr('');setSelected('');returnHome();}catch(e:any){setError(tr(e.message))}finally{lock.current=false;setBusy(false);}}
  if(editing)return <Screen title={tr("Бюджеты")} heading={<span/>} back={()=>setEditing(false)}><BudgetEditor value={b} data={data} budgetId={tracked} scope={scoped?.categories} available={visibleCurrencies(data)} categories={data.categories} ready={ready} onSave={async next=>{if(scoped)await onBudgets((data.categoryBudgets||[]).map(old=>old.id===scoped.id?{...old,...next}:old));else await onBudget(next);setEditing(false)}}/><CategoryBudgets data={data} day={day} ready={ready} onSave={onBudgets}/></Screen>;
- return <div className="budget-home"><div className="home-top"><div className="tracked-budget"><BudgetPicker data={data} value={[tracked]} onChange={ids=>setTracked(ids[0])}/></div><DailySummary budget={shownBudget} entries={trackedEntries} day={day} onEdit={()=>setEditing(true)}/></div><div className="home-lower" ref={lower} onScroll={scheduleReturn} onPointerDown={()=>{touching.current=true;stopReturn()}} onPointerUp={()=>{touching.current=false;scheduleReturn()}} onPointerCancel={()=>{touching.current=false;scheduleReturn()}} onClick={scheduleReturn}>
+ return <div className="budget-home"><div className="home-top"><div className="tracked-budget"><BudgetPicker data={data} value={[tracked]} onChange={ids=>setTracked(ids[0])}/></div><DailySummary budget={shownBudget} entries={trackedEntries} day={day} onEdit={()=>setEditing(true)}/></div><div className="home-lower" ref={lower}>
  <section className="quick-expense" aria-label={tr("Быстрый расход")}><input ref={directCamera} type="file" accept="image/*" capture="environment" hidden onChange={e=>{const file=e.target.files?.[0];e.target.value='';if(file)onDraft({category:selected,method:'photo',file,budgetId:tracked})}}/>
    <div className="quick-categories">{quick.map(c=><button key={c.id} title={categoryLabel(c)} aria-label={categoryLabel(c)} className={selected===c.id?'chosen':''} aria-pressed={selected===c.id} onClick={()=>setSelected(selected===c.id?'':c.id)}><CatIcon category={c}/></button>)}<button className={moreCategories?'chosen':''} aria-label={tr("Другая категория")} title={tr("Другая категория")} aria-expanded={moreCategories} aria-controls="quick-category-picker" onClick={()=>setMoreCategories(!moreCategories)}><MoreHorizontal size={24}/></button></div>
    {moreCategories&&<div className="other-category" id="quick-category-picker"><Picker value={selected} onChange={id=>{setSelected(id);setMoreCategories(false)}} options={categoryOptions(activeCats)} label={tr("Категория расхода")} autoOpen onDismiss={()=>setMoreCategories(false)}/></div>}
