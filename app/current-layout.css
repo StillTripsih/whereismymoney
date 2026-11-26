@@ -507,3 +507,9 @@ button,input,textarea,select{letter-spacing:normal}
 .transaction-amount>.budget-amount-display>span{font-size:40px!important;font-weight:400!important}
 .settings-menu-note{font-size:12px;line-height:1.5}
 @media(prefers-reduced-motion:reduce){.home-lower{scroll-behavior:auto!important}}
+
+/* Preserve length-aware amount fitting inside fixed-size controls. */
+.budget-editor .budget-funding .budget-amount-display>span,.transaction-amount>.budget-amount-display>span{font-size:min(40px,var(--amount-label-size))!important}
+.budget-editor .budget-day-row .budget-amount-display>span{font-size:min(28px,var(--amount-label-size))!important}
+.budget-amount-display.amount-field>span{font-size:min(20px,var(--amount-label-size))!important}
+.currency-preview-primary .amount-field>span{font-size:min(36px,var(--amount-label-size))!important}
