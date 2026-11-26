@@ -1,3 +1,5 @@
+import {BudgetAmount} from './budget-amount';
+import {Check} from 'lucide-react';
 import {tr, localeCode, categoryLabel} from '@/lib/i18n';
 import {fetchCurrentRates} from '@/lib/rate-providers';
 import {Picker} from './ui';
@@ -110,11 +112,11 @@ export function SettingsForm({
       action={
         mode !== 'install' && (
           <button
-            className="primary save-top"
+            className="primary save-top" aria-label={tr("Сохранить")}
             disabled={busy}
             onClick={() => save()}
           >
-            {busy ? '…' : tr("Сохранить")}
+            <Check/>
           </button>
         )
       }
@@ -128,19 +130,11 @@ export function SettingsForm({
         <><Picker value={provider} onChange={v=>setProvider(v as typeof provider)} options={[["exchange","ExchangeRate-API"],["currency-api","Currency API"],["manual",tr("Вручную")]]} label={tr("Источник курса")}/>
           <label className="field">
             1 USD = … THB
-            <input
-              inputMode="decimal"
-              value={usd}
-              onChange={(e) => setUsd(e.target.value)}
-            />
+            <BudgetAmount compact fractional allowNegative={false} value={usd} currency="THB" label="1 USD → THB" onChange={setUsd}/>
           </label>
           <label className="field">
             1 UAH = … THB
-            <input
-              inputMode="decimal"
-              value={uah}
-              onChange={(e) => setUah(e.target.value)}
-            />
+            <BudgetAmount compact fractional allowNegative={false} value={uah} currency="THB" label="1 UAH → THB" onChange={setUah}/>
           </label>
           <p className="muted small">
             {tr("Сейчас:")}{data.rates.source}, {data.rates.date}{tr(". Новый курс применяется к новым операциям и сбережениям. Старые расходы не меняются.")}</p>
@@ -150,14 +144,7 @@ export function SettingsForm({
         currencies.map((c) => (
           <label className="field" key={c}>
             {c}
-            <input
-              inputMode="decimal"
-              value={balances[c]}
-              onChange={(e) =>
-                setBalances({ ...balances, [c]: e.target.value })
-              }
-              placeholder={tr("Не указано")}
-            />
+            <BudgetAmount compact fractional allowZero value={balances[c]} currency={c} label={c} onChange={value=>setBalances({...balances,[c]:value})}/>
           </label>
         ))}
       {mode !== 'install' && (

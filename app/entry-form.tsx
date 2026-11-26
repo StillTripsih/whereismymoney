@@ -1,3 +1,7 @@
+import {BudgetAmount} from './budget-amount';
+import {AmountKeypad} from './amount-keypad';
+import {AmountDisplay} from './amount-display';
+import {amountKey} from '@/lib/amount-keypad';
 import {visibleCurrencies} from '@/lib/currency-settings';
 import {tr, localeCode, categoryLabel} from '@/lib/i18n';
 import {WheelDate} from './wheel-date';
@@ -387,44 +391,13 @@ export function EntryForm({
               options={visibleCurrencies(data).map((c) => [c, c + ' ' + symbols[c]])}
             />
           </div>
-          <div className="expense-control-row editor-expense-row"><button data-direct-action="true" aria-label={tr("Чек")} onClick={()=>camera.current?.click()}><Camera/></button><button aria-label={tr("Голос")} onClick={()=>switchMode('voice')}><Mic/></button><output className="expense-display" aria-label={tr("Сумма или выражение")}>{expr||'0'}</output><button className="primary save-circle" aria-label={tr("Сохранить операцию")} disabled={busy||result===null||result<=0} onClick={save}><Check/></button></div>
+          <div className="expense-control-row editor-expense-row"><button data-direct-action="true" aria-label={tr("Чек")} onClick={()=>camera.current?.click()}><Camera/></button><button aria-label={tr("Голос")} onClick={()=>switchMode('voice')}><Mic/></button><AmountDisplay text={expr||'0'} currency={currency}/><button className="primary save-circle" aria-label={tr("Сохранить операцию")} disabled={busy||result===null||result<=0} onClick={save}><Check/></button></div>
           <div className="calc-result">
             {result !== null
               ? '= ' + money(result, currency)
               : tr("Например: 850 − 200")}
           </div>
-          <div className="calculator">
-            {[
-              '7',
-              '8',
-              '9',
-              '÷',
-              '4',
-              '5',
-              '6',
-              '×',
-              '1',
-              '2',
-              '3',
-              '−',
-              '.',
-              '0',
-              '⌫',
-              '+',
-              'C',
-              '=',
-            ].map((k) => (
-              <button
-                key={k}
-                className={['÷', '×', '−', '+'].includes(k) ? 'operator' : ''}
-                onClick={() =>
-                  setExpr(k==='C'?'':k==='='?(result===null?expr:String(result)):k === '⌫' ? expr.slice(0, -1) : expr + k)
-                }
-              >
-                {k}
-              </button>
-            ))}
-          </div>
+          <AmountKeypad currency={currency} onKey={key=>{try{setExpr(amountKey(expr,key,currency))}catch(e:any){setError(tr(e.message))}}}/>
           <button className="text-button editor-upload" aria-label={tr("Загрузить фото чека")} onClick={()=>upload.current?.click()}><Upload size={20}/></button>
           <label className="field">
             {tr("Дата")}<WheelDate value={date} onChange={setDate} label={tr("Дата операции")}/>
@@ -450,17 +423,7 @@ export function EntryForm({
                   </div>
                   <div className="input-pair">
                     <label className="field">
-                      {tr("Сумма")}<input
-                        inputMode="decimal"
-                        value={p.expr}
-                        onChange={(e) =>
-                          setParts(
-                            parts.map((x, j) =>
-                              j === i ? { ...x, expr: e.target.value } : x,
-                            ),
-                          )
-                        }
-                      />
+                      {tr("Сумма")}<BudgetAmount compact value={p.expr} currency={currency} allowNegative={false} onChange={expr=>setParts(parts.map((x,j)=>j===i?{...x,expr}:x))}/>
                     </label>
                     <label className="field">
                       {tr("Категория")}<Picker

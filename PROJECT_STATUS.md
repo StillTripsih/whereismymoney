@@ -105,3 +105,13 @@ Release evidence: commit 8942cb70fbec55a13a2e0ceb401f5de5fdc3c38f; Actions 45784
 - Home returns instantly on finger release; touch state is tracked through document-level release/cancel events. Active touch, editing/modal and hidden-page states defer reset. No 30-second idle wait remains.
 - Rollback source and manifest: ../wimm-rollback-8942cb70/. Previous published commit 8942cb70fbec55a13a2e0ceb401f5de5fdc3c38f. Revert with a new forward commit only; preserve local financial storage and personal keys.
 - Browser/real phone visual and gesture checks remain unavailable under existing session restriction. Automated controller tests are not a phone check.
+
+Release verification: commit 3c78aa6f495e8c08749c9bbf395b1816a338a4df; Actions 45787911048 attempt 2 succeeded after Pages artifact-metadata failure on attempt 1. 89 tests/typecheck/build passed. All seven app files HTTP 200 and byte-matched checked build; worker behavior and full cache 15cc5346fbbc verified. Rollback tag before-reference-skin-8942cb70 points to 8942cb70fbec55a13a2e0ceb401f5de5fdc3c38f. Browser/phone appearance and actual touch behavior unverified.
+
+
+## 2026-11-26 — Apple-inspired UI consistency
+- Keep user palette and main composition; quiet system typography, shared 24px panels/14px controls, clearer boundaries, restrained glow and consistent back/save/add roles.
+- One keypad in home and operation form; shared amount dialogs for budgets, transaction edit, receipts, balances and currency previews/rates. Fixed row/type sizes and reserved additional key slots. Credit balances and receipt/rate decimals preserved.
+- Return home smoothly 2000ms after finger release; holding/re-touch and modal/input states prevent reset; inertia does not move the deadline. Reduced motion uses immediate positioning after the same delay.
+- Budget top actions share one row. Budget planning is vertically compact; other budgets remain below as separate cards. Settings use one explicit grid with palette and utility row.
+- Source review details and unverified visual/accessibility coverage: docs/UI_CONSISTENCY_REVIEW.md. Existing user data, keys and URL unchanged. Previous release 3c78aa6f495e8c08749c9bbf395b1816a338a4df remains available for rollback.

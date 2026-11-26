@@ -175,7 +175,7 @@ export function daysBetween(start: string, end: string) {
   );
 }
 // Recursive descent: arithmetic only; never execute user text as JavaScript.
-export function calculate(input: string): number {
+export function calculate(input: string, roundToCents = true): number {
   const text = input
     .replace(/\s/g, '')
     .replace(/,/g, '.')
@@ -224,7 +224,7 @@ export function calculate(input: string): number {
     Math.abs(result) > 1e12
   )
     throw Error(tr("Проверьте выражение"));
-  return Math.round((result + Number.EPSILON) * 100) / 100;
+  return roundToCents ? Math.round((result + Number.EPSILON) * 100) / 100 : result;
 }
 export function splitAmounts(total: number, parts: number[]) {
   const cents = Math.round(total * 100);
