@@ -76,3 +76,13 @@ Publication verified: 46f6ea50a3fae9c6955523a8d7c95c385001c373; Actions 44684921
 ## 2026-11-20 — fixed statistics overview and independent list scrolling
 
 Grouped statistics controls and chart into a fixed-height top region centred across the full app width above the navigation rail. Category totals, search and transactions scroll in their own lower region with clearance for the existing rail. Chart pan/pinch behaviour and data logic are unchanged. TypeScript and production build checked; phone rendering remains unverified.
+
+
+## 2026-11-26 — quiet interface grouping
+
+- Kept the current composition, category sizes, icon sizes and keypad geometry. Added one subtle keypad outline/surface, a shared category capsule and low-contrast section/sheet boundaries. Individual digits remain flat. Category icon wrappers in lists remain flat.
+- Navigation: inactive icons use the current red/accent at full opacity; the active icon is white on a quiet dark-accent surface, with a short left indicator. Added accessible button names and aria-current. Shared selection surfaces use the same quiet treatment while retaining existing checks/underlines.
+- Budget settings and budget chooser now share the visual centres of the existing lower four-column grid. The header calculation preserves different positioning contexts, including the 36/24px top padding and warning state. No category or keypad sizing rules were changed.
+- Independent read-only design review identified a wide-screen grid-width mismatch in the first formula; corrected to use the full existing lower-grid width.
+- Verified against an isolated copy of published head b7a3947ebba0ec452fc1e0f484fa75ecf4f4333c: 82 tests, TypeScript without incremental cache, and production Pages build. Declared default-theme contrast pairs: inactive rail icon/group 4.42:1; selected white/dark-accent plate 15.15:1; keypad text/group 18.00:1. These are token calculations, not browser measurements.
+- Browser, phone rendering, zoom and light/custom-palette visual checks remain unverified under the existing browser-testing restriction. Existing storage, records, API keys and deployment URL unchanged. Unrelated local palette/category/favicon edits were preserved and excluded from this release.

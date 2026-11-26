@@ -208,3 +208,111 @@ svg.lucide-check{width:34px!important;height:34px!important;stroke-width:3!impor
 .analysis-page>.analysis-records:focus-visible{outline:1px solid var(--user-accent);outline-offset:-2px}
 @media(max-height:650px){.analysis-fixed .analysis-balance{font-size:30px}.analysis-fixed .analysis-dates{margin:2px auto!important}.analysis-fixed .analysis-dates>.date-trigger{min-height:34px!important;font-size:14px!important}.analysis-fixed .analysis-periods>button{height:36px}.analysis-fixed .analysis-heading-row>.picker-button,.analysis-fixed .budget-picker-trigger{height:36px!important}.analysis-fixed>.analysis-header{padding-bottom:0!important}.analysis-fixed .comparison-legend,.analysis-fixed .chart-gesture-hint{font-size:7px!important;line-height:1.2!important}}
 @media(max-width:360px){.phone.view-stats{padding-inline:12px!important}.analysis-page>.analysis-records{padding-left:46px!important}}
+
+
+/* 2026-11-26: quiet grouping; retain composition, category sizes and keypad geometry. */
+:root{
+ --ui-group-surface:color-mix(in srgb,var(--user-bg) 96%,var(--user-ink) 4%);
+ --ui-elevated-surface:color-mix(in srgb,var(--user-bg) 92%,var(--user-ink) 8%);
+ --ui-group-line:color-mix(in srgb,var(--user-ink) 13%,transparent);
+ --ui-keypad-line:color-mix(in srgb,var(--user-accent) 38%,transparent);
+ --ui-selected-plate:color-mix(in srgb,var(--user-accent) 28%,#09090b);
+ --ui-selected-ink:#fff;
+}
+.bottom-nav{
+ background:var(--ui-group-surface)!important;
+ box-shadow:inset 0 0 0 1px var(--ui-group-line),0 6px 18px #00000012!important;
+ backdrop-filter:none!important;
+}
+.bottom-nav button{
+ color:var(--user-accent)!important;opacity:1!important;
+ background:transparent!important;position:relative;border-radius:12px!important;
+}
+.bottom-nav button svg{color:inherit!important}
+.bottom-nav button.active,.bottom-nav button[aria-current=page]{
+ color:var(--ui-selected-ink)!important;background:var(--ui-selected-plate)!important;
+ box-shadow:inset 2px 0 0 var(--user-accent)!important;border-radius:12px!important;
+}
+.phone.home-minimal .home-top{
+ --home-entry-inset:46px;--home-top-offset:36px;--home-action-top:20px;
+ --home-entry-width:calc(100% - var(--home-entry-inset));
+}
+.phone.home-minimal .home-top:has(.budget-encouragement){--home-action-top:60px}
+.phone.home-minimal .home-top .daily-summary .budget-caption{
+ left:calc((100% + var(--home-entry-inset) - var(--home-entry-width))/2 + var(--home-entry-width)/8 - 22px)!important;
+ top:var(--home-action-top)!important;
+}
+.phone.home-minimal .home-top .tracked-budget{
+ right:calc((100% - var(--home-entry-inset) - var(--home-entry-width))/2 + var(--home-entry-width)/8 - 22px)!important;
+ top:calc(var(--home-top-offset) + var(--home-action-top))!important;
+}
+.home-top:after{
+ content:'';position:absolute;inset-inline:0;bottom:0;height:1px;
+ background:var(--ui-group-line);pointer-events:none;
+}
+.phone.home-minimal .quick-categories{
+ background:var(--ui-group-surface)!important;border-radius:22px!important;
+ box-shadow:inset 0 0 0 1px var(--ui-group-line)!important;
+}
+.phone.home-minimal .quick-categories>button{
+ color:var(--user-ink)!important;background:transparent!important;
+ border-radius:12px!important;box-shadow:none!important;
+}
+.phone.home-minimal .quick-categories>button .entry-icon,
+.phone.home-minimal .quick-categories>button .entry-icon svg,
+.phone.home-minimal .quick-categories>button>svg{color:inherit!important}
+.phone.home-minimal .quick-categories>button.chosen,
+.phone.home-minimal .quick-categories>button[aria-pressed=true],
+.phone.home-minimal .quick-categories>button[aria-expanded=true]{
+ background:var(--ui-selected-plate)!important;color:var(--ui-selected-ink)!important;
+ box-shadow:inset 0 -2px 0 var(--user-accent)!important;
+}
+.phone.home-minimal .quick-categories>button.chosen .entry-icon svg,
+.phone.home-minimal .quick-categories>button[aria-pressed=true] .entry-icon svg{color:inherit!important}
+.amount-keypad{
+ position:relative;background:var(--ui-group-surface);
+ border-radius:20px;box-shadow:inset 0 0 0 1px var(--ui-keypad-line);
+}
+.amount-keypad .home-keypad>button{
+ background:transparent!important;border-radius:12px!important;box-shadow:none!important;
+}
+.amount-keypad .home-keypad>button:active:not(:disabled){
+ background:color-mix(in srgb,var(--user-ink) 8%,transparent)!important;
+}
+.amount-keypad .pad-extra>button{border-radius:10px}
+.amount-keypad:focus-within{box-shadow:inset 0 0 0 1px var(--user-accent)}
+.page-screen .screen-window,.picker-overlay.picker-overlay>section,.budget-select-window,
+.category-editor-overlay>section,.wheel-overlay>section{
+ background:var(--ui-elevated-surface)!important;
+ box-shadow:inset 0 0 0 1px var(--ui-group-line),0 18px 48px #00000028!important;
+}
+.page-screen .screen-bar{
+ background:transparent!important;box-shadow:inset 0 -1px 0 var(--ui-group-line);
+}
+.phone.view-stats .analysis-fixed,.account-wallet-total{
+ background:var(--ui-group-surface)!important;border-radius:20px;
+ box-shadow:inset 0 0 0 1px var(--ui-group-line);
+}
+:is(.budget-select-options,.picker-options,.category-tiles,.currency-select-buttons,
+.wallet-currency-choice,.analysis-periods,.budget-period-presets)>button[aria-pressed=true],
+.picker-overlay.budget-list-picker .picker-options>button[aria-pressed=true],
+.policy-inline button[aria-pressed=true],.chip.selected{
+ background:var(--ui-selected-plate)!important;color:var(--ui-selected-ink)!important;
+ box-shadow:inset 0 -1px 0 var(--user-accent)!important;
+}
+.picker-overlay.category-grid-picker .picker-options>button[aria-pressed=true] .category-option,
+.picker-overlay.category-grid-picker .picker-options>button[aria-pressed=true] .category-option>span,
+.picker-overlay.category-grid-picker .picker-options>button[aria-pressed=true] .entry-icon svg,
+.category-tiles>button[aria-pressed=true] .entry-icon svg{color:var(--ui-selected-ink)!important}
+.bottom-nav button:focus-visible,.amount-keypad button:focus-visible,
+.quick-categories>button:focus-visible,.picker-options>button:focus-visible,
+.category-tiles>button:focus-visible,.budget-select-options>button:focus-visible{
+ outline:2px solid var(--user-accent)!important;outline-offset:2px!important;
+}
+@media(max-height:680px){.phone.home-minimal .home-top{--home-top-offset:24px}}
+@media(max-width:360px){.phone.home-minimal .home-top{--home-entry-inset:42px}}
+@media(forced-colors:active){
+ .amount-keypad,.quick-categories,.bottom-nav,.screen-window{outline:1px solid CanvasText}
+ .bottom-nav button[aria-current=page],
+ .quick-categories>button[aria-pressed=true]{outline:2px solid Highlight}
+}

@@ -639,6 +639,8 @@ export default function FinanceApp() {
       {createPortal(<nav className="bottom-nav" aria-label={tr("Основная навигация")}>
         <button
           className={view === 'overview' ? 'active' : ''}
+          aria-label={tr("Главная")}
+          aria-current={view === 'overview' ? 'page' : undefined}
           onClick={() => nav('overview')}
         >
           <House />
@@ -646,6 +648,8 @@ export default function FinanceApp() {
         </button>
         <button
           className={['stats', 'history'].includes(view) ? 'active' : ''}
+          aria-label={tr("Статистика")}
+          aria-current={['stats', 'history'].includes(view) ? 'page' : undefined}
           onClick={() => nav('stats')}
         >
           <ChartNoAxesCombined />
@@ -654,6 +658,8 @@ export default function FinanceApp() {
 
         <button
           className={view === 'savings' ? 'active' : ''}
+          aria-label={tr("Сбережения")}
+          aria-current={view === 'savings' ? 'page' : undefined}
           onClick={() => nav('savings')}
         >
           <Wallet />
@@ -661,6 +667,8 @@ export default function FinanceApp() {
         </button>
         <button
           className={['more', 'categories'].includes(view) ? 'active' : ''}
+          aria-label={tr("Ещё")}
+          aria-current={['more', 'categories'].includes(view) ? 'page' : undefined}
           onClick={() => nav('more')}
         >
           <Settings />
