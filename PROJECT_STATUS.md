@@ -115,3 +115,13 @@ Release verification: commit 3c78aa6f495e8c08749c9bbf395b1816a338a4df; Actions 4
 - Return home smoothly 2000ms after finger release; holding/re-touch and modal/input states prevent reset; inertia does not move the deadline. Reduced motion uses immediate positioning after the same delay.
 - Budget top actions share one row. Budget planning is vertically compact; other budgets remain below as separate cards. Settings use one explicit grid with palette and utility row.
 - Source review details and unverified visual/accessibility coverage: docs/UI_CONSISTENCY_REVIEW.md. Existing user data, keys and URL unchanged. Previous release 3c78aa6f495e8c08749c9bbf395b1816a338a4df remains available for rollback.
+
+Publication evidence: final commit de8b2f760e0653c6ef220d741c492d709dbafcbf; GitHub Actions 45790792459 succeeded. 93 tests, TypeScript and clean production build passed. Seven public app files matched the checked build byte-for-byte; service-worker behavior/assets and cache 6412cba86f11 verified. Prior UI rollback tag: before-apple-consistency-3c78aa6f (3c78aa6f495e8c08749c9bbf395b1816a338a4df). Mobile visual, gesture and accessibility runtime checks remain unverified under the session browser restriction.
+
+
+## 2026-11-26 — home polish and durable Gemini setup
+- Camera control opens explicit camera/gallery choices; gallery input has no capture attribute. Shared on home and operation entry. Cancel leaves data unchanged; image type/20MB validation retained.
+- Category bar is centred in the non-scrolling home header. Lower area keeps keypad/history; smooth reset delay is now 1000ms after release. Rail has no shared background/outline; selected state and left tick remain.
+- Fixed incorrect save claim: pending key is persisted before verification and retained on 503/network/timeout; last verified key remains active until replacement succeeds. Pending/verified/invalid/unavailable statuses survive reload. Masked controlled input restores the saved key and receives clipboard text directly. Safari system clipboard confirmation cannot be bypassed.
+- Google requests use bounded overall/per-request timeouts, readable abort errors, stable-model prioritisation and fallback to another available Flash model on overload/retirement. Read-only metadata alone never marks connected. No real personal API key or live Google generation was available for validation.
+- 97 automated tests and TypeScript passed. Browser/mobile camera, gallery, clipboard, gestures and visual checks remain unverified under the existing session restriction. Updated key-storage privacy text.

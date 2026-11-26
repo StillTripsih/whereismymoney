@@ -8,7 +8,7 @@ Private, local-first expense and savings tracker. No account is required.
 - Supports English, Russian, Thai and Ukrainian.
 - Exports and imports a full JSON backup.
 - Works as an installable PWA with an offline app shell after its first load.
-- Lets a user connect their own Google AI Studio key to analyse a receipt. The key stays in the current browser session and is not committed to this repository.
+- Lets a user connect their own Google AI Studio key to analyse a receipt. The personal key is saved on this device when connection is requested, separately from financial exports, and is not committed to this repository. Saving and successful Gemini verification are shown separately.
 
 ## Privacy model
 

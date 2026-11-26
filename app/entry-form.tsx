@@ -1,3 +1,4 @@
+import {ReceiptPhotoButton} from './receipt-photo-button';
 import {BudgetAmount} from './budget-amount';
 import {AmountKeypad} from './amount-keypad';
 import {AmountDisplay} from './amount-display';
@@ -391,7 +392,7 @@ export function EntryForm({
               options={visibleCurrencies(data).map((c) => [c, c + ' ' + symbols[c]])}
             />
           </div>
-          <div className="expense-control-row editor-expense-row"><button data-direct-action="true" aria-label={tr("Чек")} onClick={()=>camera.current?.click()}><Camera/></button><button aria-label={tr("Голос")} onClick={()=>switchMode('voice')}><Mic/></button><AmountDisplay text={expr||'0'} currency={currency}/><button className="primary save-circle" aria-label={tr("Сохранить операцию")} disabled={busy||result===null||result<=0} onClick={save}><Check/></button></div>
+          <div className="expense-control-row editor-expense-row"><ReceiptPhotoButton onSelect={choosePhoto}/><button aria-label={tr("Голос")} onClick={()=>switchMode('voice')}><Mic/></button><AmountDisplay text={expr||'0'} currency={currency}/><button className="primary save-circle" aria-label={tr("Сохранить операцию")} disabled={busy||result===null||result<=0} onClick={save}><Check/></button></div>
           <div className="calc-result">
             {result !== null
               ? '= ' + money(result, currency)

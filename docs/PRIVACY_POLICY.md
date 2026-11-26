@@ -1,6 +1,6 @@
 # Privacy Policy for WHERE IS MY MONEY
 
-Effective date: 2026-11-09
+Effective date: 2026-11-26
 
 WHERE IS MY MONEY (WIMM) is designed to work without an account. The app stores expenses, budgets, categories, savings, language choices, and backups locally in the browser or installed app storage on the device.
 
@@ -12,7 +12,7 @@ The app owner does not operate a server that receives or stores your financial r
 
 Receipt analysis is off unless you connect your own Google AI Studio key. When you choose to analyse a receipt, the selected image, audio recording, or text and the category list are transmitted directly from your device to Google Gemini. Google's handling of that request is governed by Google's policies. Do not submit information you do not want to send to Google.
 
-Your Google AI Studio key is held only in the current browser session. It is not included in exports or sent to the app owner.
+When you press the connection checkmark, your Google AI Studio key is saved in this browser’s local storage, including when verification is temporarily unavailable. A pending replacement is kept separately from the last verified connection. Keys are not included in financial exports or sent to the app owner. You can delete both keys using the disconnect control in Gemini settings. Verification sends a short request to Google using your quota.
 
 ## Device permissions
 

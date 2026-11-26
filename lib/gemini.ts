@@ -1,3 +1,4 @@
+import {googleCredentials} from './google-credential-store';
 import {verifyGoogle} from './google-connection';
 import {parseAICredential} from './ai-credential';
 import {tr} from './i18n';
@@ -12,12 +13,14 @@ import {
 import type { Receipt } from './receipt';
 
 // Personal credential is separate from financial backups and exports.
-function readConnection(){try{return JSON.parse(localStorage.getItem('wimm-google-connection')||'null')}catch{return null}}
+function credentialStore(){return googleCredentials(localStorage)}
+function readConnection(){try{return credentialStore().active()}catch{return null}}
 let apiKey:string = readConnection()?.key || '';
 let googleModel:string = readConnection()?.model || '';
-export function geminiConnectionStatus(){const saved=readConnection();return saved?{checkedAt:saved.checkedAt as string}:null}
-export async function connectGoogle(key:string){const model=await verifyGoogle(key);const saved={key,model,checkedAt:new Date().toISOString()};try{localStorage.setItem('wimm-google-connection',JSON.stringify(saved))}catch{throw Error('Браузер не разрешил сохранить ключ. Проверьте настройки хранения сайта.')}apiKey=key;googleModel=model;accessToken='';try{localStorage.removeItem('wimm-ai-access')}catch{}}
-export async function recheckGoogle(){if(!apiKey)throw Error('Сначала вставьте ключ');await connectGoogle(apiKey)}
+export function savedGoogleKey(){try{return credentialStore().key()}catch{return ''}}
+export function geminiConnectionStatus(){try{return credentialStore().status()}catch{return null}}
+export async function connectGoogle(key:string){const store=credentialStore();try{store.pending(key)}catch{throw Error('Браузер не разрешил сохранить ключ. Проверьте хранение данных сайта.')}try{const model=await verifyGoogle(key);store.verified(key,model);apiKey=key;googleModel=model;accessToken='';try{localStorage.removeItem('wimm-ai-access')}catch{}}catch(error:any){try{store.failed(key,error.message,error.status||0)}catch{}throw error}}
+export async function recheckGoogle(){const key=savedGoogleKey()||apiKey;if(!key)throw Error('Сначала вставьте ключ');await connectGoogle(key)}
 let accessToken = '';
 function hostedToken() {
   if (accessToken) return accessToken;
@@ -48,7 +51,7 @@ export function disconnectHosted() {
   googleModel = '';
   try {
     localStorage.removeItem('wimm-ai-access');
-    localStorage.removeItem('wimm-google-connection');
+    credentialStore().clear();
   } catch {}
 }
 export function configureGemini(key: string, model: string = '') {
