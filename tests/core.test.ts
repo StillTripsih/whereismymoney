@@ -177,12 +177,12 @@ test('audio encoder writes valid mono 16kHz PCM WAV with clipped samples', () =>
 });
 test('Gemini adapter sends only selected content and handles quota and incomplete output', async () => {
   const originalFetch = globalThis.fetch;
-  configureGemini('unit-test-key');
+  configureGemini('unit-test-key', 'models/test-flash');
   try {
     globalThis.fetch = async (url, opts) => {
       assert.equal(
         String(url),
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent',
+        'https://generativelanguage.googleapis.com/v1beta/models/test-flash:generateContent',
       );
       assert.ok(!String(url).includes('unit-test-key'));
       const body = JSON.parse(String(opts?.body));
@@ -603,3 +603,9 @@ test('wallet includes every budget and converts signed balances without changing
 test('shared keypad supports signed balances, clear, arithmetic and whole-baht evaluation',()=>{assert.equal(amountKey('0','5','THB'),'5');assert.equal(amountKey('500','±','THB'),'-500');assert.equal(amountKey('-500','±','THB'),'500');assert.equal(amountKey('-500+200','=','THB'),'-300');assert.equal(amountKey('100/3','=','THB'),'33');assert.equal(amountKey('12','⌫','THB'),'1');assert.equal(amountKey('-100','C','THB'),'');assert.equal(currencyInput('-500+200','THB'),-300);assert.throws(()=>currencyInput('-1.5','THB'))});
 
 test('a new budget needs no category assignment and records expenses in any category by budget ID',()=>{const state=initialState(),day=today(),card={id:'free-card',name:'Card',amount:1000,currency:'THB' as const,start:day,end:shiftDate(day,29),policy:'spread' as const,quick:[],categories:[]};state.categoryBudgets=[card];const base={group:'receipt',currency:'THB' as const,kind:'expense' as const,date:day,note:'',rates:state.rates,created:day+'T10:00:00Z',budgetId:card.id};state.entries=[{...base,id:'food',amount:100,category:'cat-0'},{...base,id:'other',amount:200,category:'cat-1'},{...base,id:'elsewhere',amount:900,category:'cat-0',budgetId:'main'}];const restored=validateState(JSON.parse(JSON.stringify(state)));assert.deepEqual(restored.categoryBudgets![0].categories,[]);assert.equal(walletBudgetBalances(restored,day,'THB')[0].balance,700);assert.equal(analysisEntries(restored,card.id).length,2);assert.equal(restored.entries.length,3)});
+
+// Connection checks use synthetic credentials and never contact Google.
+import {verifyGoogle,googleFailure} from '../lib/google-connection';
+test('Google connection verifies generation and skips unavailable model',async()=>{const original=globalThis.fetch;const calls:string[]=[];globalThis.fetch=async(url:any)=>{calls.push(String(url));return new Response(JSON.stringify(calls.length===1?{models:[{name:'models/gemini-9.9-flash',supportedGenerationMethods:['generateContent']},{name:'models/gemini-9.8-flash',supportedGenerationMethods:['generateContent']}]}:calls.length===2?{error:{}}:{candidates:[{content:{parts:[{text:'OK'}]}}]}),{status:calls.length===2?404:200})};try{assert.equal(await verifyGoogle('synthetic-test-key'),'models/gemini-9.8-flash');assert.equal(calls.length,3)}finally{globalThis.fetch=original}});
+test('Google connection does not call a metadata-only success connected',async()=>{const original=globalThis.fetch;let calls=0;globalThis.fetch=async()=>new Response(JSON.stringify(++calls===1?{models:[{name:'models/gemini-9.9-flash',supportedGenerationMethods:['generateContent']}]}:{}),{status:calls===1?200:403});try{await assert.rejects(verifyGoogle('synthetic-test-key'),/запретил доступ/)}finally{globalThis.fetch=original}});
+test('Modern Google credentials and temporary errors remain distinct',()=>{assert.equal(parseAICredential('AQ.'+'a'.repeat(40)).kind,'google');assert.match(googleFailure(503),/временно/);assert.match(googleFailure(429),/Квота/);assert.match(googleFailure(400),/не принял/)});

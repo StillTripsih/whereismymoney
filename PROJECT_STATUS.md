@@ -86,3 +86,12 @@ Grouped statistics controls and chart into a fixed-height top region centred acr
 - Independent read-only design review identified a wide-screen grid-width mismatch in the first formula; corrected to use the full existing lower-grid width.
 - Verified against an isolated copy of published head b7a3947ebba0ec452fc1e0f484fa75ecf4f4333c: 82 tests, TypeScript without incremental cache, and production Pages build. Declared default-theme contrast pairs: inactive rail icon/group 4.42:1; selected white/dark-accent plate 15.15:1; keypad text/group 18.00:1. These are token calculations, not browser measurements.
 - Browser, phone rendering, zoom and light/custom-palette visual checks remain unverified under the existing browser-testing restriction. Existing storage, records, API keys and deployment URL unchanged. Unrelated local palette/category/favicon edits were preserved and excluded from this release.
+
+Publication verified 2026-11-26: commit a60c811d04a39903dbd09c665e0868b9e4422792; GitHub Actions run 45783906331 succeeded. Public HTML/JS/CSS/service-worker HTTP200; index-_8xNkQYT.js, index-BqFzpD1n.css and sw.js exactly match the isolated checked build (offline cache d5c5b4934585). 82 automated tests, TypeScript and production build passed. Browser/phone visual checks remain unverified.
+
+
+## 2026-11-26 — home scrolling and personal Gemini connection
+- Hide scrollbar tracks globally without disabling scrolling. Home returns to keypad after 30 seconds idle, after expense save, and on home remount/budget change. Active touch and open editor defer return.
+- Keep personal Google credential outside financial exports in device storage; real generation probe, available-model discovery, modern key format and separate paste button. Successful saved connection survives app updates; failed replacement does not overwrite it.
+- Google 429/503/authentication errors are distinct; bounded retry for temporary server failures. UI shows last successful check rather than claiming continuous service availability.
+- Browser/mobile and real personal-key checks not performed due session restriction/no credential.

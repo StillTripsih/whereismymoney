@@ -18,13 +18,18 @@ import {WheelDate} from './wheel-date';
 import {DailySummary} from './daily-summary';
 import {CategoryBudgets} from './category-budgets';
 import type {CategoryBudget} from '@/lib/budget';
-import {useState,useRef} from 'react';
+import {useState,useRef,useEffect} from 'react';
 import {Camera,Mic,Plus,SlidersHorizontal,ArrowUpRight,MoreHorizontal,Calculator,Check,Wallet} from 'lucide-react';
 import {budgetStatus,validBudget,type Budget} from '@/lib/budget';
 import {calculate,money,today,daysBetween,convert,entriesForBudget,MAIN_BUDGET_ID,type State,type Entry,type Currency} from '@/lib/finance';
 import {CatIcon,Picker,categoryOptions} from './ui';
 import type {Draft} from './entry-form';
 export function BudgetHome({data,day,ready,onBudget,onBudgets,onSave,onDraft,tracked,setTracked,children}:{children?:ReactNode;data:State;day:string;ready:boolean;tracked:string;setTracked:(id:string)=>void;onBudgets:(b:CategoryBudget[])=>Promise<void>;onBudget:(b:Budget)=>Promise<void>;onSave:(e:Entry[])=>Promise<void>;onDraft:(d:Draft)=>void}){
+ const lower=useRef<HTMLDivElement>(null);const idle=useRef<ReturnType<typeof setTimeout>|null>(null);const touching=useRef(false);
+ function stopReturn(){if(idle.current)clearTimeout(idle.current)}
+ function returnHome(){lower.current?.scrollTo({top:0,behavior:'auto'})}
+ function scheduleReturn(){stopReturn();if(!lower.current?.scrollTop)return;idle.current=setTimeout(()=>{if(touching.current||document.querySelector('[role="dialog"],.sheet')||lower.current?.contains(document.activeElement)&&document.activeElement?.matches('input,textarea,select')){scheduleReturn();return}returnHome()},30000)}
+ useEffect(()=>{returnHome();return stopReturn},[tracked]);
  const scoped=data.categoryBudgets?.find(b=>b.id===tracked);
  const b=tracked===MAIN_BUDGET_ID?data.budget:scoped;
  const trackedEntries=entriesForBudget(data.entries,tracked);
@@ -39,9 +44,9 @@ export function BudgetHome({data,day,ready,onBudget,onBudgets,onSave,onDraft,tra
  const activeCats=data.categories.filter(c=>!c.archived);
  const budgetOptions=[[MAIN_BUDGET_ID,<span className="budget-choice"><Wallet/><span><b>{tr("Основной бюджет")}</b><small>{tr("Все прежние операции")}</small></span></span>],...(data.categoryBudgets||[]).map(item=>[item.id,<span className="budget-choice"><Wallet/><span><b>{item.name}</b><small>{item.categories.map(id=>categoryLabel(data.categories.find(c=>c.id===id))||id).join(' · ')}</small></span></span>])];
  let amount:number|null=null;try{amount=currency==='THB'?Math.round(calculate(expr)):calculate(expr)}catch{}
- async function save(){if(lock.current)return;setError('');if(!amount||amount<=0){setError(tr("Введите сумму расхода"));return;}if(selected&&!activeCats.some(c=>c.id===selected)){setError(tr("Выберите категорию"));return;}lock.current=true;setBusy(true);try{await onSave([{id:crypto.randomUUID(),group:crypto.randomUUID(),amount,currency,kind:'expense',category:selected||'cat-unknown',date:day,note:'',rates:{...data.rates},created:new Date().toISOString(),budgetId:tracked}]);setExpr('');setSelected('');}catch(e:any){setError(tr(e.message))}finally{lock.current=false;setBusy(false);}}
+ async function save(){if(lock.current)return;setError('');if(!amount||amount<=0){setError(tr("Введите сумму расхода"));return;}if(selected&&!activeCats.some(c=>c.id===selected)){setError(tr("Выберите категорию"));return;}lock.current=true;setBusy(true);try{await onSave([{id:crypto.randomUUID(),group:crypto.randomUUID(),amount,currency,kind:'expense',category:selected||'cat-unknown',date:day,note:'',rates:{...data.rates},created:new Date().toISOString(),budgetId:tracked}]);setExpr('');setSelected('');returnHome();}catch(e:any){setError(tr(e.message))}finally{lock.current=false;setBusy(false);}}
  if(editing)return <Screen title={tr("Бюджеты")} heading={<span/>} back={()=>setEditing(false)}><BudgetEditor value={b} data={data} budgetId={tracked} scope={scoped?.categories} available={visibleCurrencies(data)} categories={data.categories} ready={ready} onSave={async next=>{if(scoped)await onBudgets((data.categoryBudgets||[]).map(old=>old.id===scoped.id?{...old,...next}:old));else await onBudget(next);setEditing(false)}}/><CategoryBudgets data={data} day={day} ready={ready} onSave={onBudgets}/></Screen>;
- return <div className="budget-home"><div className="home-top"><div className="tracked-budget"><BudgetPicker data={data} value={[tracked]} onChange={ids=>setTracked(ids[0])}/></div><DailySummary budget={shownBudget} entries={trackedEntries} day={day} onEdit={()=>setEditing(true)}/></div><div className="home-lower">
+ return <div className="budget-home"><div className="home-top"><div className="tracked-budget"><BudgetPicker data={data} value={[tracked]} onChange={ids=>setTracked(ids[0])}/></div><DailySummary budget={shownBudget} entries={trackedEntries} day={day} onEdit={()=>setEditing(true)}/></div><div className="home-lower" ref={lower} onScroll={scheduleReturn} onPointerDown={()=>{touching.current=true;stopReturn()}} onPointerUp={()=>{touching.current=false;scheduleReturn()}} onPointerCancel={()=>{touching.current=false;scheduleReturn()}} onClick={scheduleReturn}>
  <section className="quick-expense" aria-label={tr("Быстрый расход")}><input ref={directCamera} type="file" accept="image/*" capture="environment" hidden onChange={e=>{const file=e.target.files?.[0];e.target.value='';if(file)onDraft({category:selected,method:'photo',file,budgetId:tracked})}}/>
    <div className="quick-categories">{quick.map(c=><button key={c.id} title={categoryLabel(c)} aria-label={categoryLabel(c)} className={selected===c.id?'chosen':''} aria-pressed={selected===c.id} onClick={()=>setSelected(selected===c.id?'':c.id)}><CatIcon category={c}/></button>)}<button className={moreCategories?'chosen':''} aria-label={tr("Другая категория")} title={tr("Другая категория")} aria-expanded={moreCategories} aria-controls="quick-category-picker" onClick={()=>setMoreCategories(!moreCategories)}><MoreHorizontal size={24}/></button></div>
    {moreCategories&&<div className="other-category" id="quick-category-picker"><Picker value={selected} onChange={id=>{setSelected(id);setMoreCategories(false)}} options={categoryOptions(activeCats)} label={tr("Категория расхода")} autoOpen onDismiss={()=>setMoreCategories(false)}/></div>}

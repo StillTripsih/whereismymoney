@@ -1,3 +1,4 @@
+import {verifyGoogle} from './google-connection';
 import {parseAICredential} from './ai-credential';
 import {tr} from './i18n';
 import {getLanguage,categoryLabel} from './i18n';
@@ -10,8 +11,13 @@ import {
 } from './finance';
 import type { Receipt } from './receipt';
 
-// User-owned key stays in memory only: never bundled, persisted or exported.
-let apiKey = '';
+// Personal credential is separate from financial backups and exports.
+function readConnection(){try{return JSON.parse(localStorage.getItem('wimm-google-connection')||'null')}catch{return null}}
+let apiKey:string = readConnection()?.key || '';
+let googleModel:string = readConnection()?.model || '';
+export function geminiConnectionStatus(){const saved=readConnection();return saved?{checkedAt:saved.checkedAt as string}:null}
+export async function connectGoogle(key:string){const model=await verifyGoogle(key);const saved={key,model,checkedAt:new Date().toISOString()};try{localStorage.setItem('wimm-google-connection',JSON.stringify(saved))}catch{throw Error('Браузер не разрешил сохранить ключ. Проверьте настройки хранения сайта.')}apiKey=key;googleModel=model;accessToken='';try{localStorage.removeItem('wimm-ai-access')}catch{}}
+export async function recheckGoogle(){if(!apiKey)throw Error('Сначала вставьте ключ');await connectGoogle(apiKey)}
 let accessToken = '';
 function hostedToken() {
   if (accessToken) return accessToken;
@@ -39,12 +45,15 @@ export async function connectHosted(code: string) {
 export function disconnectHosted() {
   accessToken = '';
   apiKey = '';
+  googleModel = '';
   try {
     localStorage.removeItem('wimm-ai-access');
+    localStorage.removeItem('wimm-google-connection');
   } catch {}
 }
-export function configureGemini(key: string) {
+export function configureGemini(key: string, model: string = '') {
   apiKey = key.trim();
+  googleModel = model;
 }
 export function geminiEnabled() {
   return !!apiKey || !!hostedToken();
@@ -253,7 +262,7 @@ export async function analyzeGemini(
   const response = await receiptFetch(
     hostedToken()
       ? '/api/analyze'
-      : 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent',
+      : 'https://generativelanguage.googleapis.com/v1beta/'+googleModel+':generateContent',
     {
       method: 'POST',
       headers: hostedToken()
@@ -275,7 +284,6 @@ export async function analyzeGemini(
         generationConfig: {
           responseMimeType: 'application/json',
           responseSchema: schema,
-          temperature: 0.1,
           maxOutputTokens: 16000,
         },
       }),
