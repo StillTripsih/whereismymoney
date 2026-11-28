@@ -89,58 +89,29 @@ Grouped statistics controls and chart into a fixed-height top region centred acr
 
 Publication verified 2026-11-26: commit a60c811d04a39903dbd09c665e0868b9e4422792; GitHub Actions run 45783906331 succeeded. Public HTML/JS/CSS/service-worker HTTP200; index-_8xNkQYT.js, index-BqFzpD1n.css and sw.js exactly match the isolated checked build (offline cache d5c5b4934585). 82 automated tests, TypeScript and production build passed. Browser/phone visual checks remain unverified.
 
-
-## 2026-11-26 — home scrolling and personal Gemini connection
-- Hide scrollbar tracks globally without disabling scrolling. Home returns to keypad after 30 seconds idle, after expense save, and on home remount/budget change. Active touch and open editor defer return.
-- Keep personal Google credential outside financial exports in device storage; real generation probe, available-model discovery, modern key format and separate paste button. Successful saved connection survives app updates; failed replacement does not overwrite it.
-- Google 429/503/authentication errors are distinct; bounded retry for temporary server failures. UI shows last successful check rather than claiming continuous service availability.
-- Browser/mobile and real personal-key checks not performed due session restriction/no credential.
+2026-11-26: personal Gemini key persists separately from backups; real generation verification and clipboard button. Home keypad idle reset (30s); scrollbar tracks hidden. See isolated release status for validation.
 
 Release evidence: commit 8942cb70fbec55a13a2e0ceb401f5de5fdc3c38f; Actions 45784999244 attempt 2 succeeded (first attempt Pages metadata transient failure). 85 tests, typecheck/build passed. Seven public app files byte-match verified build; worker behavior/assets equivalent, cache f8f70e2e3ab6 verified using Linux order. Actual mobile UI/clipboard and personal API key unverified.
 
-
-## 2026-11-26 — supplied HTML surface style and instant home return
-- Source reference: user supplied where_is_my_money.html. Used only visual CSS language, not its scripts, data, external CDNs, or instructions.
-- Applied soft gradient panels, selected red capsule buttons, subtle neon glow, unified confirmation surfaces and text-option inline breathing room. Existing grids, dimensions, font/icon sizes and placement preserved; no new dependencies.
-- Home returns instantly on finger release; touch state is tracked through document-level release/cancel events. Active touch, editing/modal and hidden-page states defer reset. No 30-second idle wait remains.
-- Rollback source and manifest: ../wimm-rollback-8942cb70/. Previous published commit 8942cb70fbec55a13a2e0ceb401f5de5fdc3c38f. Revert with a new forward commit only; preserve local financial storage and personal keys.
-- Browser/real phone visual and gesture checks remain unavailable under existing session restriction. Automated controller tests are not a phone check.
+2026-11-26: reference HTML button/panel/glow skin; existing layout and sizes retained. Instant home return on finger release (no idle delay), blocked while touch/editor active. Rollback: commit 8942cb70; ../wimm-rollback-8942cb70/. See docs/DESIGN_ROLLBACK.md.
 
 Release verification: commit 3c78aa6f495e8c08749c9bbf395b1816a338a4df; Actions 45787911048 attempt 2 succeeded after Pages artifact-metadata failure on attempt 1. 89 tests/typecheck/build passed. All seven app files HTTP 200 and byte-matched checked build; worker behavior and full cache 15cc5346fbbc verified. Rollback tag before-reference-skin-8942cb70 points to 8942cb70fbec55a13a2e0ceb401f5de5fdc3c38f. Browser/phone appearance and actual touch behavior unverified.
 
-
-## 2026-11-26 — Apple-inspired UI consistency
-- Keep user palette and main composition; quiet system typography, shared 24px panels/14px controls, clearer boundaries, restrained glow and consistent back/save/add roles.
-- One keypad in home and operation form; shared amount dialogs for budgets, transaction edit, receipts, balances and currency previews/rates. Fixed row/type sizes and reserved additional key slots. Credit balances and receipt/rate decimals preserved.
-- Return home smoothly 2000ms after finger release; holding/re-touch and modal/input states prevent reset; inertia does not move the deadline. Reduced motion uses immediate positioning after the same delay.
-- Budget top actions share one row. Budget planning is vertically compact; other budgets remain below as separate cards. Settings use one explicit grid with palette and utility row.
-- Source review details and unverified visual/accessibility coverage: docs/UI_CONSISTENCY_REVIEW.md. Existing user data, keys and URL unchanged. Previous release 3c78aa6f495e8c08749c9bbf395b1816a338a4df remains available for rollback.
+2026-11-26: Apple-inspired consistency in user palette; shared fixed-geometry keypad and amount dialogs, compact budgets, common home action row, explicit settings grid. Smooth home return 2000ms from release. 92 tests/typecheck passed; full source-review coverage/limits in docs/UI_CONSISTENCY_REVIEW.md. Existing palette edits preserved outside release.
 
 Publication evidence: final commit de8b2f760e0653c6ef220d741c492d709dbafcbf; GitHub Actions 45790792459 succeeded. 93 tests, TypeScript and clean production build passed. Seven public app files matched the checked build byte-for-byte; service-worker behavior/assets and cache 6412cba86f11 verified. Prior UI rollback tag: before-apple-consistency-3c78aa6f (3c78aa6f495e8c08749c9bbf395b1816a338a4df). Mobile visual, gesture and accessibility runtime checks remain unverified under the session browser restriction.
 
-
-## 2026-11-26 — home polish and durable Gemini setup
-- Camera control opens explicit camera/gallery choices; gallery input has no capture attribute. Shared on home and operation entry. Cancel leaves data unchanged; image type/20MB validation retained.
-- Category bar is centred in the non-scrolling home header. Lower area keeps keypad/history; smooth reset delay is now 1000ms after release. Rail has no shared background/outline; selected state and left tick remain.
-- Fixed incorrect save claim: pending key is persisted before verification and retained on 503/network/timeout; last verified key remains active until replacement succeeds. Pending/verified/invalid/unavailable statuses survive reload. Masked controlled input restores the saved key and receives clipboard text directly. Safari system clipboard confirmation cannot be bypassed.
-- Google requests use bounded overall/per-request timeouts, readable abort errors, stable-model prioritisation and fallback to another available Flash model on overload/retirement. Read-only metadata alone never marks connected. No real personal API key or live Google generation was available for validation.
-- 97 automated tests and TypeScript passed. Browser/mobile camera, gallery, clipboard, gestures and visual checks remain unverified under the existing session restriction. Updated key-storage privacy text.
+2026-11-26: final home tweaks: explicit gallery/camera, centred fixed categories, 1s smooth reset and flat navigation rail. Gemini pending key now saved before checking, restored masked on reload; active key preserved during failed replacements. Model fallback, clear timeout and persistent state. 97 tests/typecheck/build passed; real device/API-key validation unavailable.
 
 Release verification: commit c924a8c6d5ad64f04a00a1f5d3da647f080006dc; Actions 45793590665 succeeded on attempt 1. 97 tests, typecheck, production build passed. Seven public app files HTTP200 and byte-match verified build; worker behavior/assets/cache 153b2429ffa2 verified. Rollback tag before-final-tweaks-de8b2f76 preserves de8b2f760e0653c6ef220d741c492d709dbafcbf. No real user Gemini key, phone clipboard/camera/gallery or visual gesture check performed.
 
-
-## Budget management and funding history
-- Wallet shows all budgets directly; removed its budget-selection modal. Creation plus is adjacent to the edit pencil on every row. Wallet editors expose add-budget and top-up actions; currency buttons have a refresh action and a settings route is available from the settings grid.
-- Home shows the selected budget name below its amount. Removed the separate budget-settings icon; the main amount opens that exact budget editor.
-- Budget creation snapshots are appended only for new confirmed budgets. Explicit top-ups are positive, marked income entries applied on their own date; ordinary income remains excluded from budget balance. Reserve allocations before the deposit date are unchanged. Editing a current balance deducts already-counted funding to prevent doubling. Deposits are excluded from legacy savings and expense statistics.
-- Funding history includes initial creation and deposits, with date/time, currency, budget ID/name and original rate snapshot. Survives JSON backup/export; creation history remains after budget deletion. Existing budgets have no invented historical events. New fields are optional and old backups remain valid.
-- Top-ups outside the current budget period require adjusting its period first; no silent extension. Previous version retained. Browser/mobile UI and external live currency-provider checks remain unverified under the existing browser-testing restriction.
+Budget funding release: wallet lists all budgets without chooser; add-budget icon next to edit, explicit top-up, creation/deposit history. Home labels selected budget and opens it via main amount; separate settings icon removed. Currency settings route and wallet rate refresh. 104 tests/typecheck passed; source and previous release retained. Browser/mobile UI and live rate provider unverified.
 
 Release evidence: commit 8aa2c2b679f73fd04dc67c4eaf25211fbeb4c768; Actions 46131840490 succeeded. 104 automated tests, typecheck and production build passed. All seven public app files HTTP200 and byte-matched checked build; worker behavior/assets/cache 89bb357cbfcb verified. Previous source tag before-budget-funding-c924a8c6 retained. Future rollback should retain top-up-aware financial logic once new funding entries exist; do not clear or discard ledger data. Browser/phone flows and live currency-provider response remain unverified.
 
+Wallet plus correction: row white plus deposits into its budget via one shared keypad and confirm; only wallet home creates budgets. Removed creation buttons from budget editors/settings list; wallet funding and legacy saved-funds sections remain expanded. Existing funding ledger logic unchanged. 104 tests/typecheck/build passed; phone UI unverified.
 
-## Wallet plus semantics correction
-- White plus next to each budget now deposits into that exact budget. Opens the shared keypad directly; one confirm saves the amount and dated history entry.
-- Creating a new budget is available only from the wallet home Add budget action. Removed add-budget controls from main/category budget editors and the settings budget list.
-- Funding history is an always-expanded section. Legacy saved-funds section is also expanded; no wallet history disclosure remains. Existing funding calculations, idempotency and stored data unchanged.
-- 104 financial/storage regression tests passed. Browser/phone visual and touch checks remain unverified under the session browser restriction.
+Release verification: commit d7a59ed8f15ae7133da76b2458b56defe3f6bd0c; Actions 46132601565 attempt 2 succeeded after Pages artifact-metadata failure. 104 tests passed; typecheck and clean build passed. Seven public app files HTTP200 and byte-matched checked build; worker/cache f1cb4e902e1c verified. Previous source retained at tag before-wallet-plus-8aa2c2b6. Browser/phone tap, visual and scroll checks unverified.
+
+
+Budget editor layout correction: shared near-full-width budget sheets for home/wallet/settings and additional budgets, with a budget icon in the header. Shared balance row keeps amount, currency and white deposit plus on one grid; removed the separate labelled deposit button. Removed left red navigation marker while retaining active selection. Successful deposits close the stale editor to avoid saving its previous balance over the new ledger result. Financial schema and stored records unchanged. 104 automated tests, TypeScript and clean production build passed; browser/phone visual and native tap checks remain unverified.

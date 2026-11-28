@@ -92,6 +92,7 @@ export function Screen({
   heading,
   hideBack = false,
   className = "",
+  backIcon,
 }: {
   title: string;
   back: () => void;
@@ -102,6 +103,7 @@ export function Screen({
   heading?: ReactNode;
   hideBack?: boolean;
   className?:string;
+  backIcon?:ReactNode;
 }) {
   const touch = useRef<{ x: number; y: number; edge: 'left' | 'right' } | null>(
     null,
@@ -146,7 +148,7 @@ export function Screen({
             onClick={back}
             aria-label={tr("Назад")}
           >
-            <ArrowLeft size={28} />
+            {backIcon || <ArrowLeft size={28} />}
           </button>
         )}
         <div className="screen-heading">{heading || <h1>{title}</h1>}</div>
