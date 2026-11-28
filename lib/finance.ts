@@ -22,7 +22,10 @@ export type Rates = {
   date: string;
   source: string;
 } & Partial<Record<Currency,number|null>>;
+export type BudgetCreationRecord={id:string;budgetId:string;name:string;amount:number;currency:Currency;created:string;rates:Rates};
 export type Entry = {
+  budgetTopUp?:true;
+  budgetName?:string;
   id: string;
   group: string;
   amount: number;
@@ -43,6 +46,7 @@ export function entriesForBudget(entries: Entry[], budgetId: string) {
   return budgetId === ALL_BUDGETS_ID ? entries : entries.filter(entry => entryBudgetId(entry) === budgetId);
 }
 export type State = {
+  budgetHistory?:BudgetCreationRecord[];
   language?: Language;
   languagePacks?: LanguagePack[];
   enabledCurrencies?: Currency[];
@@ -426,6 +430,8 @@ function validRates(r: any) {
   );
 }
 export function validateState(s: any): State {
+ if(s?.budgetHistory!==undefined&&(!Array.isArray(s.budgetHistory)||s.budgetHistory.length>100000||new Set(s.budgetHistory.map((e:any)=>e?.id)).size!==s.budgetHistory.length||s.budgetHistory.some((e:any)=>!e||typeof e.id!=='string'||!e.id||e.id.length>80||typeof e.budgetId!=='string'||!e.budgetId||e.budgetId.length>80||typeof e.name!=='string'||!e.name.trim()||e.name.length>80||!Number.isFinite(e.amount)||Math.abs(e.amount)>1e12||Math.abs(e.amount*100-Math.round(e.amount*100))>.001||!allCurrencies.includes(e.currency)||typeof e.created!=='string'||!Number.isFinite(Date.parse(e.created))||!validRates(e.rates))))throw Error(tr('Некорректная история бюджетов'));
+
  if(s?.enabledCurrencies!==undefined&&(!Array.isArray(s.enabledCurrencies)||!s.enabledCurrencies.length||s.enabledCurrencies.length>allCurrencies.length||new Set(s.enabledCurrencies).size!==s.enabledCurrencies.length||s.enabledCurrencies.some((c:any)=>!allCurrencies.includes(c))||!s.enabledCurrencies.includes(s.display)))throw Error(tr('Проверьте список валют'));
  if(s?.savings&&allCurrencies.some(c=>!currencies.includes(c)&&s.savings[c]!==undefined&&s.savings[c]!==null&&(!Number.isFinite(s.savings[c])||Math.abs(s.savings[c])>1e12)))throw Error(tr('Проверьте остатки валют'));
  if(s?.languagePacks!==undefined){if(!Array.isArray(s.languagePacks)||s.languagePacks.length>20||new Set(s.languagePacks.map((p:any)=>p?.code)).size!==s.languagePacks.length)throw Error('Проверьте файл языка');s.languagePacks.forEach((pack:LanguagePack)=>validateLanguagePack(pack))}
@@ -497,6 +503,8 @@ export function validateState(s: any): State {
       Math.abs(e.amount * 100 - Math.round(e.amount * 100)) > 0.001 ||
       !allCurrencies.includes(e.currency) ||
       !['expense', 'income'].includes(e.kind) ||
+      (e.budgetTopUp!==undefined&&(e.budgetTopUp!==true||e.kind!=='income')) ||
+      (e.budgetName!==undefined&&(typeof e.budgetName!=='string'||e.budgetName.length>80)) ||
       !ids.has(e.category) ||
       !validDate(e.date) ||
       typeof e.note !== 'string' ||
@@ -527,6 +535,7 @@ export function exportText(s: State) {
     '\nТекущие курсы: ' +
     JSON.stringify(s.rates) +
     '\n\nКАТЕГОРИИ\n';
+  for(const e of s.budgetHistory||[])text += '\nСоздан бюджет: '+e.created+' · '+e.name+' · '+e.amount+' '+e.currency+'\n';
   for (const c of s.categories)
     text += c.id + ' | ' + c.name + (c.archived ? ' [архив]' : '') + '\n';
   text += '\nОПЕРАЦИИ (все периоды)\n';
@@ -534,11 +543,12 @@ export function exportText(s: State) {
     text +=
       [
         e.date,
-        e.kind === 'expense' ? 'РАСХОД' : 'ДОХОД',
+        e.budgetTopUp ? 'ПОПОЛНЕНИЕ БЮДЖЕТА' : e.kind === 'expense' ? 'РАСХОД' : 'ДОХОД',
         e.amount + ' ' + e.currency,
         cat.get(e.category),
         JSON.stringify(e.note),
         'id=' + e.id,
+        'бюджет=' + (e.budgetName || e.budgetId || 'main'),
         'чек=' + e.group,
         'курсы=' + JSON.stringify(e.rates),
       ].join(' | ') + '\n';

@@ -524,3 +524,23 @@ button,input,textarea,select{letter-spacing:normal}
 .photo-source-options>button{display:flex;align-items:center;gap:16px;width:100%;min-height:64px;padding:16px 20px;border:0;border-radius:var(--control-radius);background:var(--ui-soft-panel);box-shadow:inset 0 0 0 1px var(--control-edge);color:var(--user-ink);text-align:left;font-size:15px}
 .photo-source-options svg{width:26px;height:26px;flex-shrink:0;color:var(--user-accent)}
 .ai-compact input{width:100%;min-width:0;font-size:16px!important;overflow:hidden}
+
+/* Wallet owns budget management; home names the selected account. */
+.home-actions{justify-content:flex-end!important}
+.home-budget-name{margin:4px 44px 6px!important;text-align:center;color:var(--user-muted);font-size:12px;line-height:1.4;overflow-wrap:anywhere}
+.home-minimal .home-top .daily-progress{margin-top:8px!important}
+.budget-management-actions{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 14px}
+.budget-management-actions>button,.budget-add-with-label,.budget-create-another{display:flex;align-items:center;justify-content:center;gap:10px;min-height:44px;padding:10px 14px;border:0;border-radius:var(--control-radius);background:var(--ui-soft-panel);box-shadow:inset 0 0 0 1px var(--control-edge);color:var(--user-accent);font-size:12px;line-height:1.4}
+.budget-management-actions svg,.budget-add-with-label svg,.budget-create-another svg{width:22px;height:22px;stroke-width:1.6;flex-shrink:0}
+.account-wallet>.budget-add-with-label{width:100%;margin:0 0 18px}
+.account-wallet-tools{gap:8px!important;margin-bottom:6px!important}.account-wallet-tools>.wallet-currency-choice{min-width:0}.account-wallet-tools>button{width:40px;height:44px;flex-shrink:0;padding:8px}
+.wallet-rate-date{margin:0 0 20px!important;text-align:center;font-size:10px}
+.account-wallet-row{gap:6px!important}.account-wallet-row>.account-edit{width:36px!important;min-width:36px!important;padding:6px!important}.account-wallet-row>button:first-child{column-gap:8px!important}
+.budget-funding-history{margin-top:22px;padding-top:18px;box-shadow:inset 0 1px 0 var(--control-edge)}
+.budget-funding-history h2{font-size:14px;font-weight:500;margin:0 0 14px}.budget-funding-history article{display:flex;align-items:center;gap:14px;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--ui-soft-line)}
+.budget-funding-history article>div{display:flex;flex-direction:column;gap:6px;min-width:0}.budget-funding-history b{font-size:12px;font-weight:400;overflow-wrap:anywhere}.budget-funding-history time{font-size:10px;color:var(--user-muted)}.budget-funding-history strong{font-size:16px;font-weight:400;white-space:nowrap}
+.budget-top-up{text-align:center}.top-up-amount{display:flex;justify-content:center;align-items:baseline;gap:8px;margin:20px 0}.budget-top-up>.save-circle{margin:20px 0 0 auto!important}
+.phone.view-more{grid-template-areas:'budgets budgets budgets update update update' 'data data data categories categories categories' 'guide guide guide install install install' 'currency currency currency currency currency currency' 'palette palette palette palette palette palette' 'ai ai share share language language'!important}.view-more>.setting-currency{grid-area:currency!important;height:64px!important;min-height:64px!important;flex-direction:row!important}
+@media(max-width:360px){.account-wallet-row strong{font-size:16px!important}.budget-funding-history article{align-items:flex-start;gap:8px}.budget-funding-history strong{font-size:14px}}
+
+.budget-reserve-note{grid-column:1/-1!important;text-align:left!important;color:var(--user-muted);font-size:11px!important}.budget-create-another{flex:1;min-width:0;font-size:11px}.budget-footer:has(.budget-create-another){flex-wrap:wrap!important}.budget-funding-history article>div{flex:1}

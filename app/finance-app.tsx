@@ -1,3 +1,5 @@
+import {CurrencySettings} from './currency-settings';
+import {recordNewBudgets} from '@/lib/budget-history';
 import {AnalysisPanel} from './analysis-panel';
 import {createPortal} from 'react-dom';
 import {Moon,CalendarRange,Infinity as InfinityIcon} from 'lucide-react';
@@ -562,7 +564,7 @@ export default function FinanceApp() {
       </div>
       {view === 'overview' && (
         <>
-          <BudgetHome tracked={trackedBudget} setTracked={id=>{setTrackedBudget(id);const budget=id==="main"?data.budget:data.categoryBudgets?.find(b=>b.id===id);if(budget)setDisplay(budget.currency)}} onBudgets={async categoryBudgets=>{await persist({...data,categoryBudgets})}} data={data} day={currentDay} ready={ready} onBudget={async budget=>{await persist({...data,budget});setMessage(tr("Бюджет сохранён"))}} onSave={saveEntries} onDraft={openDraft}>
+          <BudgetHome tracked={trackedBudget} setTracked={id=>{setTrackedBudget(id);const budget=id==="main"?data.budget:data.categoryBudgets?.find(b=>b.id===id);if(budget)setDisplay(budget.currency)}} onBudgets={async categoryBudgets=>{await persist(recordNewBudgets(data,{...data,categoryBudgets}))}} data={data} day={currentDay} ready={ready} onBudget={async budget=>{await persist(recordNewBudgets(data,{...data,budget}));setMessage(tr("Бюджет сохранён"))}} onSave={saveEntries} onDraft={openDraft}>
 
           <HomeTransactions entries={analysisEntries(data,trackedBudget)} categories={data.categories} render={entries=>list(entries,true)}/></BudgetHome>
         </>
@@ -605,6 +607,7 @@ export default function FinanceApp() {
             <Settings size={21} />
             {tr("Gemini · чеки и голос")}<ChevronRight />
           </button>
+          <button className="menu-item setting-currency" onClick={()=>openSettings('currency')}><Wallet/><span>{tr('Валюты и курсы')}</span></button>
           <button className="menu-item setting-data" onClick={() => openSettings('storage')}>
             <Database size={21} />
             {tr("Данные")}<ChevronRight />
@@ -695,7 +698,8 @@ export default function FinanceApp() {
           onDelete={removeEntry}
         />
       )}
-      {settings==='budgets'&&<Screen title={tr("Бюджеты")} heading={<span/>} back={()=>setSettings('')}><div className="budget-settings-page"><details className="general-budget-card"><summary>{tr("Общий бюджет")}</summary><BudgetEditor value={data.budget} data={data} available={visibleCurrencies(data)} categories={data.categories} ready={ready} onSave={async budget=>{await persist({...data,budget})}}/></details><CategoryBudgets data={data} day={currentDay} ready={ready} onSave={async categoryBudgets=>{await persist({...data,categoryBudgets})}}/></div></Screen>}
+      {settings==='currency'&&<CurrencySettings data={data} onSave={persist} onClose={()=>setSettings('')}/>}
+      {settings==='budgets'&&<Screen title={tr("Бюджеты")} heading={<span/>} back={()=>setSettings('')}><div className="budget-settings-page"><details className="general-budget-card"><summary>{tr("Общий бюджет")}</summary><BudgetEditor value={data.budget} data={data} available={visibleCurrencies(data)} categories={data.categories} ready={ready} onSave={async budget=>{await persist(recordNewBudgets(data,{...data,budget}))}}/></details><CategoryBudgets data={data} day={currentDay} ready={ready} onSave={async categoryBudgets=>{await persist(recordNewBudgets(data,{...data,categoryBudgets}))}}/></div></Screen>}
       {settings === 'storage' && (
         <StorageScreen
           key={settingsKey}
