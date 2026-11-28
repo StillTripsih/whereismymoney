@@ -135,3 +135,12 @@ Release verification: commit c924a8c6d5ad64f04a00a1f5d3da647f080006dc; Actions 4
 - Budget creation snapshots are appended only for new confirmed budgets. Explicit top-ups are positive, marked income entries applied on their own date; ordinary income remains excluded from budget balance. Reserve allocations before the deposit date are unchanged. Editing a current balance deducts already-counted funding to prevent doubling. Deposits are excluded from legacy savings and expense statistics.
 - Funding history includes initial creation and deposits, with date/time, currency, budget ID/name and original rate snapshot. Survives JSON backup/export; creation history remains after budget deletion. Existing budgets have no invented historical events. New fields are optional and old backups remain valid.
 - Top-ups outside the current budget period require adjusting its period first; no silent extension. Previous version retained. Browser/mobile UI and external live currency-provider checks remain unverified under the existing browser-testing restriction.
+
+Release evidence: commit 8aa2c2b679f73fd04dc67c4eaf25211fbeb4c768; Actions 46131840490 succeeded. 104 automated tests, typecheck and production build passed. All seven public app files HTTP200 and byte-matched checked build; worker behavior/assets/cache 89bb357cbfcb verified. Previous source tag before-budget-funding-c924a8c6 retained. Future rollback should retain top-up-aware financial logic once new funding entries exist; do not clear or discard ledger data. Browser/phone flows and live currency-provider response remain unverified.
+
+
+## Wallet plus semantics correction
+- White plus next to each budget now deposits into that exact budget. Opens the shared keypad directly; one confirm saves the amount and dated history entry.
+- Creating a new budget is available only from the wallet home Add budget action. Removed add-budget controls from main/category budget editors and the settings budget list.
+- Funding history is an always-expanded section. Legacy saved-funds section is also expanded; no wallet history disclosure remains. Existing funding calculations, idempotency and stored data unchanged.
+- 104 financial/storage regression tests passed. Browser/phone visual and touch checks remain unverified under the session browser restriction.

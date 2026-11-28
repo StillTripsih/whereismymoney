@@ -20,12 +20,11 @@ import {CatIcon,Picker} from './ui';
 
 export function CategoryBudgets({data,day,ready,onSave}:{data:State;day:string;ready:boolean;onSave:(value:CategoryBudget[])=>Promise<void>}){
  const budgets=data.categoryBudgets||[];
- const [editing,setEditing]=useState<CategoryBudget|'new'|null>(null),[remove,setRemove]=useState<string|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
+ const [editing,setEditing]=useState<CategoryBudget|null>(null),[remove,setRemove]=useState<string|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
  const lock=useRef(false);
  async function deleteBudget(id:string){if(lock.current)return;lock.current=true;setBusy(true);setError('');try{await onSave(budgets.filter(b=>b.id!==id));setRemove(null)}catch(e:any){setError(tr(e.message))}finally{lock.current=false;setBusy(false)}}
  return <section className="category-budgets" aria-label={t.budgets}>
-  <div className="row spaced budget-list-toolbar"><button className="budget-add-with-label" aria-label={tr("Новый бюджет")} disabled={!ready||busy||budgets.length>=50} onClick={()=>setEditing('new')}><Plus/><span>{tr('Добавить бюджет')}</span></button></div>
-  {editing&&<CategoryBudgetEditor key={editing==='new'?'new':editing.id} value={editing==='new'?undefined:editing} data={data} ready={ready&&!busy} onCancel={()=>setEditing(null)} onNew={()=>setEditing('new')} onSave={async b=>{await onSave(editing==='new'?[...budgets,b]:budgets.map(old=>old.id===b.id?b:old));setEditing(null)}}/>}
+  {editing&&<CategoryBudgetEditor key={editing.id} value={editing} data={data} ready={ready&&!busy} onCancel={()=>setEditing(null)} onSave={async b=>{await onSave(budgets.map(old=>old.id===b.id?b:old));setEditing(null)}}/>}
   {error&&<p role="alert" className="error">{tr(error)}</p>}
   <div className="budget-cards">{budgets.map(b=>{const s=budgetStatus(b,entriesForBudget(data.entries,b.id),day);const amount=(v:number)=>s.missing?'—':money(v,b.currency);return <article className="budget-card" key={b.id}>
    <div className="row spaced"><h3>{b.name}</h3><button className="text-button" disabled={busy} onClick={()=>setEditing(b)}>{t.edit}</button></div>
@@ -41,7 +40,7 @@ export function CategoryBudgets({data,day,ready,onSave}:{data:State;day:string;r
  </section>;
 }
 
-export function CategoryBudgetEditor({value,data,ready,onCancel,onSave,onNew}:{value?:CategoryBudget;data:State;ready:boolean;onCancel:()=>void;onNew:()=>void;onSave:(b:CategoryBudget)=>Promise<void>}){
+export function CategoryBudgetEditor({value,data,ready,onCancel,onSave}:{value?:CategoryBudget;data:State;ready:boolean;onCancel:()=>void;onSave:(b:CategoryBudget)=>Promise<void>}){
  const now=today(),lastDay=new Date(Number(now.slice(0,4)),Number(now.slice(5,7)),0).getDate();
  const [name,setName]=useState(value?.name||''),[amount,setAmount]=useState(()=>{const balance=value?currentBudgetBalance(data,value,value.id,now):0;return balance===null?'':String(value?.currency==='THB'?Math.round(balance):balance)}),[daily,setDaily]=useState(value?.dailyLimit!==undefined?String(value.dailyLimit):''),[currency,setCurrency]=useState<Currency>(value?.currency||data.budget?.currency||'THB'),[start,setStart]=useState(now),[end,setEnd]=useState(value?.end&&value.end>=now?value.end:now.slice(0,8)+lastDay),[policy,setPolicy]=useState<CategoryBudget['policy']>(value?.policy||'spread'),[busy,setBusy]=useState(false),[error,setError]=useState('');
  const categories=value?.categories||[];
@@ -52,7 +51,7 @@ export function CategoryBudgetEditor({value,data,ready,onCancel,onSave,onNew}:{v
   <BudgetPeriod start={start} end={end} onStart={()=>setStart(now)} onEnd={setEnd}/><BudgetPlan amount={amount} currency={currency} start={start} end={end} daily={daily} onDaily={setDaily} data={data} budgetId={value?.id||"new"} scope={categories}/>
   
   {error&&<p role="alert" className="error">{tr(error)}</p>}
-  <div className="budget-footer"><div className="field"><Picker value={policy} onChange={v=>setPolicy(v as CategoryBudget['policy'])} options={[["spread",t.spread],["reserve",t.reserve]]} label={t.savings}/></div><button className="budget-create-another" aria-label={tr("Новый бюджет")} disabled={busy} onClick={()=>{if(value)onNew();else{setName('');setAmount('');setDaily('')}}}><Plus/><span>{tr('Добавить бюджет')}</span></button><button className="primary save-circle" aria-label={t.saveBudget} disabled={!ready||busy} onClick={save}><Check/></button></div>
+  <div className="budget-footer"><div className="field"><Picker value={policy} onChange={v=>setPolicy(v as CategoryBudget['policy'])} options={[["spread",t.spread],["reserve",t.reserve]]} label={t.savings}/></div><button className="primary save-circle" aria-label={t.saveBudget} disabled={!ready||busy} onClick={save}><Check/></button></div>
  </section></Screen>;
 }
 

@@ -544,3 +544,8 @@ button,input,textarea,select{letter-spacing:normal}
 @media(max-width:360px){.account-wallet-row strong{font-size:16px!important}.budget-funding-history article{align-items:flex-start;gap:8px}.budget-funding-history strong{font-size:14px}}
 
 .budget-reserve-note{grid-column:1/-1!important;text-align:left!important;color:var(--user-muted);font-size:11px!important}.budget-create-another{flex:1;min-width:0;font-size:11px}.budget-footer:has(.budget-create-another){flex-wrap:wrap!important}.budget-funding-history article>div{flex:1}
+
+/* A row plus always deposits into that row; creation lives only on wallet home. */
+.account-wallet-row .budget-top-up-trigger,.account-wallet-row .budget-top-up-trigger svg{color:#fff!important}.budget-top-up-trigger svg{stroke-width:1.6!important}
+.funding-keypad{margin:0;padding:0;border:0;min-width:0;width:100%;display:flex;justify-content:center}
+.funding-budget-name{margin:0 0 10px;color:var(--user-muted);font-size:13px;line-height:1.4;text-align:center;overflow-wrap:anywhere}.budget-funding-history{display:block;overflow:visible}.legacy-savings h2{font-size:12px;font-weight:400;margin:0 0 10px}
