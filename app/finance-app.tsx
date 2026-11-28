@@ -1,4 +1,3 @@
-import {CurrencySettings} from './currency-settings';
 import {recordNewBudgets} from '@/lib/budget-history';
 import {AnalysisPanel} from './analysis-panel';
 import {createPortal} from 'react-dom';
@@ -607,7 +606,6 @@ export default function FinanceApp() {
             <Settings size={21} />
             {tr("Gemini · чеки и голос")}<ChevronRight />
           </button>
-          <button className="menu-item setting-currency" onClick={()=>openSettings('currency')}><Wallet/><span>{tr('Валюты и курсы')}</span></button>
           <button className="menu-item setting-data" onClick={() => openSettings('storage')}>
             <Database size={21} />
             {tr("Данные")}<ChevronRight />
@@ -698,7 +696,6 @@ export default function FinanceApp() {
           onDelete={removeEntry}
         />
       )}
-      {settings==='currency'&&<CurrencySettings data={data} onSave={persist} onClose={()=>setSettings('')}/>}
       {settings==='budgets'&&<Screen className="budget-screen" backIcon={<Wallet size={26}/>} title={tr("Бюджеты")} back={()=>setSettings('')}><div className="budget-settings-page"><button className="budget-add-with-label" onClick={()=>{setSettings('');nav('savings')}}>{tr('Открыть кошелёк')}</button>{data.budget&&<details className="general-budget-card"><summary>{tr("Общий бюджет")}</summary><BudgetEditor value={data.budget} data={data} available={visibleCurrencies(data)} categories={data.categories} ready={ready} onSave={async budget=>{await persist(recordNewBudgets(data,{...data,budget}))}}/></details>}<CategoryBudgets data={data} day={currentDay} ready={ready} onSave={async categoryBudgets=>{await persist(recordNewBudgets(data,{...data,categoryBudgets}))}}/></div></Screen>}
       {settings === 'storage' && (
         <StorageScreen
